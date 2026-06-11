@@ -10,7 +10,7 @@
 
 | Member | Branch | Area | Files |
 |--------|--------|------|-------|
-| **Keven** (you) | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` |
+| **Member 1** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` |
 | **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
 | **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` |
 | **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
