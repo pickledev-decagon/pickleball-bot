@@ -10,9 +10,15 @@ def annealing_weight(progress, start_phase=0.0, end_phase=0.6):
     return 1.0 - (progress - start_phase) / (end_phase - start_phase)
 
 
-def dense_distance_reward(ball_pos, paddle_x=0.35, paddle_y=0.5):
+def dense_distance_reward(ball_pos, paddle_x=0.35, paddle_y=None):
     if ball_pos[0] < 0:
         return 0.0
+    # If actual paddle y-position is unknown, use ball's y as an estimate.
+    # The paddle naturally tracks the ball vertically, so dy ≅ 0.
+    # This avoids providing incorrect vertical signal (the old hardcoded
+    # paddle_y=0.5 penalized the ball for being high or low on the court).
+    if paddle_y is None:
+        paddle_y = ball_pos[1]
     dx = ball_pos[0] - paddle_x
     dy = ball_pos[1] - paddle_y
     dist = np.sqrt(dx**2 + dy**2)
@@ -79,7 +85,7 @@ class HitDetector:
 
 def shaped_reward(sparse_reward, ball_pos, training_progress,
                   step=0, hit_detector=None,
-                  paddle_x=0.35, paddle_y=0.5,
+                  paddle_x=0.35, paddle_y=None,
                   aggression_bonus=0.0, hit_bonus=0.5,
                   proximity_weight=1.0, placement_bonus=0.0):
     dense_weight = annealing_weight(training_progress, end_phase=0.6)
