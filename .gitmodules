@@ -1,0 +1,3 @@
+[submodule "dpickleball-ml-agents"]
+	path = dpickleball-ml-agents
+	url = https://github.com/dPickleball/dpickleball-ml-agents.git
