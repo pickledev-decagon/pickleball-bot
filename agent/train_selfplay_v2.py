@@ -16,6 +16,7 @@ from config import (
     STAGE1_FRAC, STAGE2_FRAC, STAGE3_FRAC,
     TIMESTEPS_PER_STAGE, TOTAL_TIMESTEPS,
     CHECKPOINT_DIR as SAVE_DIR, LOG_DIR, BUFFER_DIR, BUFFER_MAX_SIZE,
+    PPO_DEFAULTS,
 )
 
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -150,19 +151,12 @@ def train():
     model = PPO(
         "CnnPolicy",
         vec_env,
-        learning_rate=2.5e-4,
         n_steps=2048 // NUM_ENVS,
         batch_size=128,
-        n_epochs=4,
-        gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.2,
-        ent_coef=0.01,
-        vf_coef=0.5,
-        max_grad_norm=0.5,
         device="cpu",
         verbose=1,
         tensorboard_log=LOG_DIR,
+        **PPO_DEFAULTS,
     )
 
     checkpoint_callback = SelfPlayCheckpointCallback(
