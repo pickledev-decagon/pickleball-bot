@@ -1,6 +1,19 @@
-# Contributing to PickleBall Bot
+# Contributing Guide — dPickleBall Bot
 
-## Setup
+## 📋 Team Roles
+
+| Member | Branch | Area | Files They Own |
+|--------|--------|------|---------------|
+| **Keven** (you) | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` |
+| **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
+| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` (BallTracker, heatmap, frame diff) |
+| **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
+
+**Rule:** Only modify files in your assigned area. If you need a change in a shared file, open a small PR targeting `main` first.
+
+---
+
+## 🖥️ Initial Setup (Once)
 
 ```bash
 # 1. Clone the repo (with submodule)
@@ -8,90 +21,181 @@ git clone https://github.com/pickledev-decagon/pickleball-bot.git
 cd pickleball-bot
 git submodule update --init --depth 1
 
-# 2. Install ML-Agents dependency (from submodule)
+# 2. Install ML-Agents dependency
 pip install -e ./dpickleball-ml-agents/ml-agents-envs
 
-# 3. Install other dependencies
-pip install stable-baselines3 opencv-python numpy torch torchvision
+# 3. Create conda environment and install packages
+conda create -n dpickleball pip python=3.10.12
+conda activate dpickleball
+pip install stable-baselines3 opencv-python==4.7.0.72 numpy==1.26.4 torch
 
 # 4. Set your Unity build path
-export DPICKLEBALL_BUILD_PATH="/path/to/your/Build.app"
-# Or create .env file:
-echo 'DPICKLEBALL_BUILD_PATH="/path/to/your/Build.app"' > .env
+echo 'DPICKLEBALL_BUILD_PATH="/absolute/path/to/your/Unity/Build.app"' > .env
 ```
 
-## Your Branch
+---
 
-Each member owns one area:
-
-| Member | Branch | Area | Files |
-|--------|--------|------|-------|
-| **Keven** | `team/arch-variants` | Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` |
-| **Member 2** | `team/reward-shaping` | Reward functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` |
-| **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
-
-## Daily Workflow
+## 🔄 Daily Workflow
 
 ```bash
-# Start your day: get latest main
+# 1. Get the latest main
 git checkout main
 git pull
-git submodule update --init --depth 1   # update ml-agents submodule if changed
-git checkout team/YOUR_BRANCH
-git merge main   # bring latest main into your branch
+git submodule update --init --depth 1   # update ml-agents if changed
 
-# Work, commit, push
+# 2. Switch to your branch and merge latest main
+git checkout team/YOUR_BRANCH
+git merge main
+
+# 3. Work, commit, push
 git add <your-files>
-git commit -m "Describe what you changed"
+git commit -m "Describe what you changed and why"
 git push -u origin team/YOUR_BRANCH
 
-# Open a Pull Request on GitHub when your piece is ready
-# Keven reviews and merges
+# 4. (Optional) Open a Pull Request on GitHub when your piece is ready
+#    Keven reviews and clicks "Squash and merge"
 ```
 
-## Important Rules
+---
 
-1. **Only modify files in your assigned area.** If you need a change in a shared file (e.g. `config.py`), open a small PR targeting main first.
-2. **Never push to `main` directly.** All changes go through Pull Requests.
-3. **Don't commit large files** (`.zip`, `.pt`, `.pkl`, TensorBoard logs, captured frames). Use Google Drive for checkpoints >10 MB.
-4. **Pull latest main before starting work** to avoid merge conflicts.
+## 📤 What to Push to GitHub vs Google Drive
 
-## What NOT to Commit
+### Push to GitHub (small files)
+- Code changes (`.py` files) — these are the actual work
+- Experiment results in `RESULTS.md` — table of what you tested and found
+- Config entries in `agent/experiment_configs.py` — new experiment presets
+- Any documentation changes
 
-| File/Folder | Why |
-|-------------|-----|
-| `*.zip`, `*.pt`, `*.pkl` | Checkpoints are too large — upload to Google Drive |
-| `checkpoints_selfplay_v2/` | Generated during training |
-| `logs_selfplay_v2/` | TensorBoard logs |
-| `opponent_buffer_v2/` | Generated during training |
-| `results/` | Experiment JSONs |
-| `archive/` | Old broken versions |
-| `phase-*/` | Sandbox/planning |
+### Upload to Google Drive (large files)
+- Checkpoint `.zip` files >10MB — created by training runs
+- TensorBoard log directories — debugging/tuning artifacts
+- Final trained model for competition submission
 
-## Recording Your Results
-
-After training, update `RESULTS.md` (or create a section if yours is the first entry):
-
-```markdown
-### Arch: TwoTower CNN [Member: Keven]
-| Config | Win Rate | Steps | Notes |
-|--------|----------|-------|-------|
-| dueling_heatmap | 68% vs square | 50k | Best architecture variant |
-```
-
-Upload your best checkpoint to Google Drive and add a link to `checkpoints/README.md`:
+After uploading a checkpoint, add a row to `checkpoints/README.md`:
 
 ```markdown
 | Member | Branch | Config | Win Rate | Drive Link |
 |--------|--------|--------|----------|------------|
-| Keven | arch-variants | dueling_heatmap | 68% | [link](https://drive.google.com/...) |
+| YourName | team/arch-variants | dueling_heatmap | 68% | [link](https://drive.google.com/...) |
 ```
 
-## Merging
+---
 
-1. All members finish their experiments
-2. PRs merged to `main`
-3. One person checks out `main`, trains final combined model
-4. Final checkpoint uploaded to Drive, submission packaged
-5. Tag the release: `git tag -a v1.0 -m "Competition submission"`
+## 📝 Recording Results
+
+After each experiment, update `RESULTS.md` with your findings. Use this format:
+
+```markdown
+### Area: [Your Area] — [Member Name]
+
+| Experiment | Config | Steps | Win Rate vs no_op | Win Rate vs random | Win Rate vs square | Notes |
+|-----------|--------|-------|-------------------|-------------------|-------------------|-------|
+| Baseline | stack_16_heatmap | 50k | 100% | 88% | 72% | Strong baseline |
+| Variant A | stack_16_heatmap_ent0.05 | 50k | 100% | 91% | 78% | Higher entropy helped |
+```
+
+This table is what the team uses to decide which configs go into the **final combined training run**.
+
+---
+
+## 📊 How to Run Experiments
+
+### Quick test (10k steps, 2 envs)
+```bash
+python run_experiment.py --config heatmap_obs --steps 10000 --envs 2
+```
+
+### Full training (300k steps, 8 envs)
+```bash
+python agent/train_selfplay_v2.py
+```
+
+### Evaluate a trained checkpoint
+```bash
+python -c "
+from agent.eval_harness import MatchEvaluator
+from agent.wrapper_vec import make_unity_env_fn
+from stable_baselines3 import PPO
+
+model = PPO.load('path/to/checkpoint.zip')
+env_fn = make_unity_env_fn(rank=0, build_path='path/to/Build.app')
+evaluator = MatchEvaluator(model, env_fn)
+results = evaluator.benchmark_all(n_matches=50)
+print(results)
+"
+```
+
+### Hyperparameter sweep
+```bash
+python scripts/grid_search.py sweep_configs/phase3_focused.json --output results/sweeps
+```
+
+---
+
+## 🤝 Pull Request & Merge Process
+
+**Step 1:** When your experiment is complete and your code is ready, open a Pull Request on GitHub:
+
+```
+Branch: team/YOUR-BRANCH → base: main
+Title:  "[Your Area] Brief summary of changes"
+Body:   What you changed, what results you got, what the team should know
+```
+
+**Step 2:** Keven reviews the PR:
+- Checks that only your assigned files are modified
+- Reviews logic for correctness
+- Adds any comments/questions
+
+**Step 3:** Keven clicks **"Squash and merge"** — all your commits become one clean commit on main.
+
+**Step 4:** Once all 4 areas are merged, **one person** (Keven) does the final combined training run:
+
+```bash
+git checkout main
+git pull
+# Combine winning configs → train 300k steps → evaluate → package for competition
+```
+
+---
+
+## ⚠️ Important Rules
+
+1. **Only modify files in your assigned area.** If you need a shared file change, PR it first.
+2. **Never push to `main` directly.** All changes go through Pull Requests.
+3. **Pull latest main before starting work** to avoid merge conflicts.
+4. **Don't commit large files** (`.zip`, `.pt`, `.pkl`, `.png`, TensorBoard logs). Use Google Drive.
+5. **Keep `RESULTS.md` updated** — it's the team's decision-making document.
+6. **Ask questions** — if anything is unclear about the code, your area, or git, ask in the group chat.
+
+---
+
+## ❓ Git Cheat Sheet
+
+```bash
+# See your current branch
+git branch
+
+# See all branches (local + remote)
+git branch -a
+
+# Switch to another branch
+git checkout team/reward-shaping
+
+# See what's changed but not yet staged
+git diff
+
+# Undo git add for a file
+git reset HEAD filename.py
+
+# Abandon local changes and reset to latest from remote
+git checkout -- filename.py
+
+# See teammate's branch (after they push)
+git fetch origin
+git checkout team/obs-variants
+
+# Tag final submission
+git tag -a v1.0 -m "Competition submission"
+git push origin v1.0
+```
