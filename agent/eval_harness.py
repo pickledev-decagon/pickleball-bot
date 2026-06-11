@@ -31,26 +31,38 @@ class MatchEvaluator:
         self.env_fn = env_fn
         self.max_steps_per_match = max_steps_per_match
 
-    def evaluate_vs(self, opponent_type="no_op", n_matches=50, deterministic=True):
+    def evaluate_vs(self, opponent_type="no_op", n_matches=50, deterministic=True,
+                    env_fn=None):
         """
         Play n_matches against a specific opponent type.
 
-        opponent_type options:
-            "no_op"     — stationary opponent (always neutral action)
-            "random"    — uniformly random actions
-            "square"    — square-motion pattern (stage-2 curriculum opponent)
-            "self"      — model plays against itself
+        Args:
+            opponent_type: "no_op", "random", "square", or "self".
+            n_matches: Number of matches to play.
+            deterministic: Whether model.predict uses deterministic=True.
+            env_fn: Callable that returns an EnhancedUnityWrapper.
+                    Defaults to self.env_fn. Pass a left-side env_fn
+                    (make_unity_env_fn(..., play_as_left=True)) to test
+                    left-side play.
 
         Returns dict with:
-            win_rate, wins, losses, draws, avg_match_len, avg_point_diff
+            win_rate, wins, losses, draws, avg_match_len, avg_point_diff, side
         """
+        env_fn = env_fn or self.env_fn
         results = defaultdict(int)
         total_steps = 0
         total_point_diff = 0.0
+        # Detect which side this env plays (right by default)
+        side = "unknown"
+        try:
+            test_env = env_fn()
+            side = "left" if getattr(test_env, 'play_as_left', False) else "right"
+            test_env.close()
+        except Exception:
+            pass
 
         for match_i in range(n_matches):
-            env = self.env_fn()
-
+            env = env_fn()
             # Inject opponent policy
             if opponent_type == "no_op":
                 env.opponent_policy = lambda obs: np.array([1, 1, 1], dtype=np.int32)
@@ -114,6 +126,7 @@ class MatchEvaluator:
 
         return {
             "opponent_type": opponent_type,
+            "side": side,
             "n_matches": int(n_matches),
             "win_rate": round(win_rate, 4),
             "wins": results["wins"],
@@ -123,14 +136,33 @@ class MatchEvaluator:
             "avg_point_diff": round(avg_point_diff, 2),
         }
 
-    def benchmark_all(self, n_matches=50, deterministic=True):
+    def benchmark_all(self, n_matches=50, deterministic=True, build_path=None):
         """
-        Run evaluate_vs for all standard opponent types and return a summary.
+        Run evaluate_vs for all standard opponent types on BOTH sides.
+
+        Requires build_path to create left-side envs. If build_path is None,
+        uses the build path embedded in self.env_fn.
+
+        Returns dict with:
+            {"right": {opponent: results}, "left": {opponent: results}}
         """
-        summary = {}
-        for opp in ["no_op", "random", "square", "self"]:
-            print(f"  Evaluating vs {opp} ...")
-            summary[opp] = self.evaluate_vs(opp, n_matches, deterministic)
+        right_fn = self.env_fn
+
+        # Create a left-side env factory
+        from agent.wrapper_vec import make_unity_env_fn
+        left_fn = make_unity_env_fn(
+            rank=99, build_path=build_path or "/dev/null",
+            play_as_left=True, frame_stack=16,
+        )
+
+        summary = {"right": {}, "left": {}}
+        for side_name, env_fn in [("right", right_fn), ("left", left_fn)]:
+            print(f"\n  Evaluating {side_name} side ...")
+            for opp in ["no_op", "random", "square", "self"]:
+                print(f"    vs {opp} ...")
+                summary[side_name][opp] = self.evaluate_vs(
+                    opp, n_matches, deterministic, env_fn=env_fn
+                )
         return summary
 
     @staticmethod
