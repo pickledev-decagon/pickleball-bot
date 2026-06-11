@@ -8,6 +8,7 @@
 | **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
 | **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` (BallTracker, heatmap, frame diff) |
 | **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
+| **Member 5** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
 **Rule:** Only modify files in your assigned area. If you need a change in a shared file, open a small PR targeting `main` first.
 

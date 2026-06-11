@@ -6,7 +6,7 @@
 
 ## 👥 Team Workflow
 
-**4 members, 4 areas, 1 shared repo.** Everyone works in parallel on their own branch.
+**5 members, 5 areas, 1 shared repo.** Everyone works in parallel on their own branch.
 
 | Member | Branch | Area | Files |
 |--------|--------|------|-------|
@@ -14,6 +14,7 @@
 | **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
 | **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` |
 | **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
+| **Member 5** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
 ### Flow
 
