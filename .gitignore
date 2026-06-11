@@ -1,0 +1,41 @@
+# === Checkpoints & Results ===
+*.zip
+*.pt
+*.pkl
+checkpoints_selfplay_v2/
+logs_selfplay_v2/
+opponent_buffer_v2/
+results/
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+
+# === Environment ===
+.env
+.env.local
+config.json
+
+# === Analysis Artifacts ===
+env/analysis_output/
+env/captured_frames/
+
+# === macOS ===
+.DS_Store
+*.swp
+*.swo
+
+# === Legacy / Sandbox ===
+archive/
+phase-0*/
+phase-1*/
+phase-2*/
+phase-3*/
+phase-4*/
+
+# === IDE ===
+.vscode/
+.idea/

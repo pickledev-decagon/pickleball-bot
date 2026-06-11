@@ -1,0 +1,15 @@
+{
+  "name": "phase3_focused",
+  "base_config": "heatmap_obs",
+  "n_trials": 20,
+  "steps_per_trial": 20000,
+  "envs": 2,
+  "params": {
+    "ppo_kwargs.ent_coef": {"type": "loguniform", "min": 0.001, "max": 0.03},
+    "ppo_kwargs.learning_rate": {"type": "loguniform", "min": 1e-4, "max": 5e-4},
+    "ppo_kwargs.n_steps": {"type": "choice", "values": [256, 512, 1024]},
+    "ppo_kwargs.batch_size": {"type": "choice", "values": [64, 128, 256]},
+    "ppo_kwargs.clip_range": {"type": "choice", "values": [0.15, 0.2, 0.3]},
+    "ppo_kwargs.n_epochs": {"type": "choice", "values": [4, 8]}
+  }
+}
