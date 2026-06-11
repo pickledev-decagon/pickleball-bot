@@ -3,7 +3,7 @@ import cv2
 from collections import deque
 from gymnasium import Env, spaces
 from mlagents_envs.envs.unity_parallel_env import UnityParallelEnv
-from env.preprocessing import BallTracker
+from env.preprocessing import BallTracker, SmoothBallTracker
 from agent.reward_shaping import HitDetector, shaped_reward
 
 
@@ -51,6 +51,7 @@ class EnhancedUnityWrapper(Env):
         self.prev_raw_frame = None
         self._step_count = 0
         self.ball_tracker = BallTracker() if use_ball_tracking else None
+        self.smooth_tracker = SmoothBallTracker() if use_ball_tracking else None
         self.hit_detector = HitDetector()
         self.reward_config = reward_config or {"aggression_bonus": 0.0, "hit_bonus": 0.5}
 
@@ -126,7 +127,12 @@ class EnhancedUnityWrapper(Env):
             if self._needs_transpose:
                 frame = frame.transpose(1, 2, 0)
             frame_uint8 = (frame * 255).astype(np.uint8)
-            info["ball_pos"] = self.ball_tracker.detect(frame_uint8)
+            detected = self.ball_tracker.detect(frame_uint8)
+            # Apply temporal smoothing to handle brief occlusions
+            if self.smooth_tracker is not None:
+                info["ball_pos"] = self.smooth_tracker.update(detected)
+            else:
+                info["ball_pos"] = detected
         return info
 
     def reset(self, *, seed=None, options=None):
@@ -138,8 +144,9 @@ class EnhancedUnityWrapper(Env):
         else:
             obs = self._preprocess(raw_obs)
 
+        info = self._build_info(raw_obs)
+
         if self.use_heatmap:
-            info = self._build_info(raw_obs)
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
             obs = self._render_heatmap(obs, ball_pos)
 
@@ -149,7 +156,6 @@ class EnhancedUnityWrapper(Env):
 
         self.prev_raw_frame = None
         self._step_count = 0
-        info = self._build_info(raw_obs)
         return np.concatenate(list(self.frames), axis=0), info
 
     def step(self, action):
