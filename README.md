@@ -120,7 +120,7 @@ git checkout -b team/YOUR-AREA   # e.g. team/reward-shaping
 | Unity build | `Training/Mac/Mac.app` | `Training/Windows/dp.exe` |
 | `BUILD_PATH` in `.env` | `/path/to/Mac.app` | `C:\path\to\dp.exe` |
 | Kill Unity processes | `pkill -f "Mac.app"` | `taskkill /F /IM dp.exe` |
-| Free ports | `lsof -ti:5005-5012 \| xargs kill` | `netstat -ano \| findstr :5005` then `taskkill /PID <id>` |
+| Free ports | `lsof -ti:5005-5012 \| xargs kill` | `netstat -ano \| findstr :5005` (PID is last column) → `taskkill /F /PID <id>` |
 | Conda | Same commands (cross-platform) | Same commands |
 | Python packages | Same `pip install` | Same `pip install` |
 

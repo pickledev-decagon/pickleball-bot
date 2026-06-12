@@ -109,7 +109,7 @@ pip install "setuptools<70"
 
 1. Go to: https://drive.google.com/drive/folders/1lFqj6lopoIO96C_IO8yGXGzRMY1S4fzi
 2. Download `dPickleball BuildFiless.zip` (395 MB)
-3. Unzip to e.g. `~/Desktop/dp_build/`
+3. Unzip to a folder you'll remember, e.g. `Desktop/dp_build/`
 4. Check the path contains `Training/` with your platform folder
 
 **Mac:**
@@ -186,7 +186,9 @@ taskkill /F /IM dp.exe
 
 :: Free up ports (5005–5012 range)
 netstat -ano | findstr :5005
-:: Then: taskkill /F /PID <id>
+:: Output looks like:  TCP    0.0.0.0:5005   0.0.0.0:0    LISTENING    12345
+:: The last number (12345) is the PID. Then:
+taskkill /F /PID 12345
 ```
 
 Add an alias to your shell config:
@@ -205,7 +207,8 @@ function killdp { taskkill /F /IM dp.exe }
 
 | Problem | Solution |
 |---------|----------|
-| `Permission denied` on Unity build | `chmod -R 755 /path/to/Mac.app` |
+| `Permission denied` on Unity build (Mac) | `chmod -R 755 /path/to/Mac.app` |
+| `Permission denied` on Unity build (Windows) | Right-click `dp.exe` → Properties → General tab → check "Unblock" → Apply. Or run terminal as Administrator. |
 | `_ARRAY_API not found` | `pip install "numpy<2"` |
 | `gym` / `gymnasium` conflicts | `pip install gymnasium && pip uninstall gym -y` |
 | `No module named 'mlagents_envs'` | Did you install the ML-Agents fork? See Step 2. |
