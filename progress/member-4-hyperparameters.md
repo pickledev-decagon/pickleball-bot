@@ -22,9 +22,9 @@
 
 ## Experiment Log
 
-| # | Date | Config | Steps | Best Win Rate (right) | Best Win Rate (left) | Key Finding | Drive Link |
-|---|------|--------|-------|----------------------|---------------------|-------------|------------|
-| — | — | — | — | — | — | — | — |
+| # | Date | Config | Steps | Win Rate (right) | Win Rate (left) | Best Opponent | Drive Link | Notes |
+|---|------|--------|-------|-----------------|-----------------|--------------|------------|-------|
+| — | — | — | — | — | — | — | — | — |
 
 ---
 
