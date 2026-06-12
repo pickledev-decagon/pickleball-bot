@@ -110,13 +110,17 @@ pip install "setuptools<70"
 1. Go to: https://drive.google.com/drive/folders/1lFqj6lopoIO96C_IO8yGXGzRMY1S4fzi
 2. Download `dPickleball BuildFiless.zip` (395 MB)
 3. Unzip to e.g. `~/Desktop/dp_build/`
-4. Check the path contains `Training/Mac/Mac.app/Contents/MacOS/dp`
+4. Check the path contains `Training/` with your platform folder
 
+**Mac:**
 ```bash
 chmod -R 755 ~/Desktop/dp_build/Training/Mac/Mac.app
+echo 'DPICKLEBALL_BUILD_PATH="/path/to/Training/Mac/Mac.app"' > .env
+```
 
-# Set your Unity build path
-echo 'DPICKLEBALL_BUILD_PATH="/path/to/your/Training/Mac/Mac.app"' > .env
+**Windows:**
+```bash
+echo DPICKLEBALL_BUILD_PATH=C:\path\to\Training\Windows\dp.exe > .env
 ```
 
 ### Step 5: Verify Everything Works
@@ -166,6 +170,7 @@ After each run, paste the JSON into `RESULTS.md` under the corresponding section
 
 ### Cleanup (If Experiments Crash)
 
+**Mac:**
 ```bash
 # Kill all Unity processes
 pkill -f "Mac.app/Contents/MacOS/dp"
@@ -174,9 +179,26 @@ pkill -f "Mac.app/Contents/MacOS/dp"
 lsof -ti:5005-5012 | xargs kill -9 2>/dev/null || true
 ```
 
-Add this alias to `~/.zshrc`:
+**Windows:**
+```cmd
+:: Kill all Unity processes
+taskkill /F /IM dp.exe
+
+:: Free up ports (5005–5012 range)
+netstat -ano | findstr :5005
+:: Then: taskkill /F /PID <id>
+```
+
+Add an alias to your shell config:
+
+**Mac (`~/.zshrc`):**
 ```bash
 alias killdp='pkill -f "Mac.app/Contents/MacOS/dp"'
+```
+
+**Windows (PowerShell profile):**
+```powershell
+function killdp { taskkill /F /IM dp.exe }
 ```
 
 ### Troubleshooting

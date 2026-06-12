@@ -4,39 +4,50 @@
 
 ---
 
-## 👥 Team Workflow
-
-**5 members, 5 areas, 1 shared repo.** Everyone works in parallel on their own branch.
+## 👥 Team
 
 | Member | Branch | Area | Files |
 |--------|--------|------|-------|
-| **Member 1** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` |
+| **Member 1** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
 | **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` |
+| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py`, ball detection + heatmap (via `env/wrapper.py`) |
 | **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
 | **Member 5** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
-### Flow
+> **`env/wrapper.py` note:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale). M3 owns ball detection + heatmap rendering consumed by the wrapper. Coordinate changes via PR.
+
+### Workflow
 
 ```
-Everyone experiments on their branch → push code to GitHub, checkpoints to Google Drive
+Everyone experiments on their branch → push code, checkpoints to Google Drive
                 ↓
-Discuss results as a team → pick best config for each area
+Discuss results → pick best config for each area
                 ↓
-One person (Keven) does final combined training on main
+Keven does final combined training on main
                 ↓
-Package for competition submission → tag and submit
-```
-
-### Repo URL
-
-```
-https://github.com/pickledev-decagon/pickleball-bot
+Package for competition → tag and submit
 ```
 
 ---
 
-## 🚀 Quick Start for Teammates
+## 📖 What to Read First (in Order)
+
+| # | File | Why |
+|---|------|-----|
+| **1** | [`handoff.md`](handoff.md) | Copy-paste to ChatGPT/Copilot so your LLM understands the full project context. |
+| **2** | [`CONTRIBUTING.md`](CONTRIBUTING.md) | One-stop shop: roles, setup, git workflow, training plan, quick reference. |
+| **3** | `progress/member-X-AREA.md` | YOUR assigned area — variants, done criteria, blockers, dependencies, next steps. |
+| **4** | [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | Technical deep dive — read sections relevant to your area as needed. |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.10, conda (Miniconda recommended)
+- **Mac:** Unity build `.app` (see step 3)
+- **Windows:** Unity build `.exe` (see [Windows setup notes](#windows-setup-notes))
 
 ### 1. Clone the repo
 
@@ -46,50 +57,104 @@ cd pickleball-bot
 git submodule update --init --depth 1
 ```
 
-### 2. Install dependencies
+### 2. Create environment and install
 
 ```bash
+conda create -n dpickleball pip python=3.10.12 -y
+conda activate dpickleball
+
 # ML-Agents (from submodule)
 pip install -e ./dpickleball-ml-agents/ml-agents-envs
 
 # Core packages
-conda create -n dpickleball pip python=3.10.12
-conda activate dpickleball
-pip install stable-baselines3 opencv-python==4.7.0.72 numpy==1.26.4 torch
+pip install stable-baselines3 opencv-python==4.7.0.72 \
+            matplotlib numpy "torch>=2.3,<2.6" "torchvision>=0.18,<0.20"
 ```
 
-### 3. Set your Unity build path
+<details>
+<summary>💡 If you get numpy version errors</summary>
+
+```bash
+pip install "numpy<2,>=1.23.5"
+pip install "setuptools<70"
+```
+</details>
+
+### 3. Download Unity build and set path
+
+Download from [Google Drive](https://drive.google.com/drive/folders/1lFqj6lopoIO96C_IO8yGXGzRMY1S4fzi) (395 MB).
 
 Create a `.env` file in the project root:
 
+**Mac:**
 ```bash
-echo 'DPICKLEBALL_BUILD_PATH="/absolute/path/to/your/Unity/Build.app"' > .env
+echo 'DPICKLEBALL_BUILD_PATH="/path/to/Training/Mac/Mac.app"' > .env
+chmod -R 755 /path/to/Training/Mac/Mac.app
 ```
 
-### 4. Create your branch and start working
+**Windows:**
+```bash
+echo DPICKLEBALL_BUILD_PATH=C:\path\to\Training\Windows\dp.exe > .env
+```
+
+### 4. Verify
+
+```bash
+python run_experiment.py --list
+python run_experiment.py --config baseline --steps 2000 --envs 2
+```
+
+### 5. Create your branch and start
 
 ```bash
 git checkout -b team/YOUR-AREA   # e.g. team/reward-shaping
-# ... make changes, train, experiment ...
-git add <your-files>
-git commit -m "Describe your change"
-git push -u origin team/YOUR-AREA
+# ... experiment, log, commit, push ...
 ```
 
 ---
 
-## 📋 Full Team Workflow Guide
+## <a name="windows-setup-notes"></a>🪟 Windows Setup Notes
 
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for:
-- Daily git workflow
-- How to open a Pull Request
-- What to commit vs what goes to Google Drive
-- How to record results
-- Merge process
+| Area | Mac | Windows |
+|------|-----|---------|
+| Unity build | `Training/Mac/Mac.app` | `Training/Windows/dp.exe` |
+| `BUILD_PATH` in `.env` | `/path/to/Mac.app` | `C:\path\to\dp.exe` |
+| Kill Unity processes | `pkill -f "Mac.app"` | `taskkill /F /IM dp.exe` |
+| Free ports | `lsof -ti:5005-5012 \| xargs kill` | `netstat -ano \| findstr :5005` then `taskkill /PID <id>` |
+| Conda | Same commands (cross-platform) | Same commands |
+| Python packages | Same `pip install` | Same `pip install` |
+
+All `pip install` commands and Python code work identically on Windows. The only differences are the Unity build path format and process management commands.
 
 ---
 
-## 📁 Repo Structure
+## 📋 Full Guides
+
+| Guide | What it covers |
+|-------|---------------|
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Team roles, initial setup, daily git workflow, training plan, experiment protocol, PR process, troubleshooting |
+| [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | Architecture deep dive, reward formulas, curriculum stages, self-play mechanics, PPO config, reading training output, experiment catalog with all variants and decision tree |
+| [`handoff.md`](handoff.md) | LLM-ready project context — copy-paste to ChatGPT/Copilot for instant understanding |
+
+---
+
+## 📊 Track Progress
+
+| File | What it shows |
+|------|---------------|
+| [`DASHBOARD.md`](DASHBOARD.md) | Full milestone tracker — what's done, what's next |
+| [`PROGRESS.md`](PROGRESS.md) | Team progress bars — per-member completion at a glance |
+| [`RESULTS.md`](RESULTS.md) | Cross-member comparison table — best configs per area |
+| [`progress/README.md`](progress/README.md) | How to log experiments and use the tracking system |
+| `progress/member-1-architecture.md` | M1 experiment log |
+| `progress/member-2-reward.md` | M2 experiment log |
+| `progress/member-3-observation.md` | M3 experiment log |
+| `progress/member-4-hyperparameters.md` | M4 experiment log |
+| `progress/member-5-training-strategy.md` | M5 experiment log |
+
+---
+
+## 🏗️ Repo Structure
 
 ```
 pickleball-bot/
@@ -111,40 +176,32 @@ pickleball-bot/
 │   ├── grid_search.py      # Hyperparameter sweep
 │   ├── test_competition_export.py # Export dry-run
 │   └── validate_tracker.py # Ball tracker validation
-├── sweep_configs/          # Grid search configs
+├── sweep_configs/          # Grid search configs (frame_stack=16)
+├── progress/               # Per-member experiment logs
+├── archive/                # Historical docs (build log, phase plans)
 ├── config.py               # Central config (paths, defaults)
 ├── run_experiment.py       # Single experiment runner
 ├── dpickleball-ml-agents/  # Git submodule (forked ML-Agents)
-├── RESULTS.md              # Experiment results table
-├── BUILD_LOG.md            # Chronological build history
-└── CONTRIBUTING.md         # Team workflow guide
+├── handoff.md              # LLM context for teammates
+├── CONTRIBUTING.md         # ← start here
+├── PROJECT_GUIDE.md        # Technical reference
+├── RESULTS.md              # Experiment comparison table
+├── DASHBOARD.md            # Milestone tracker
+└── PROGRESS.md             # Progress bars
 ```
 
 ---
 
-## 📊 Project Status
+## 📈 Project Status
 
 | Phase | Status |
 |-------|--------|
-| Environment setup | ✅ Done (May 4) |
+| Environment setup | ✅ Done |
 | Pipeline + all fixes | ✅ Done |
-| Git repo initialized | ✅ Done |
-| Validation tests (A1, A2) | ✅ Passed |
-| **Training runs** | ⏳ Waiting for team |
+| B1 smoke test (10k steps) | ✅ Passed |
+| **Team experiments** | ⏳ Ready to start |
+| Combination testing | ⏳ Not started |
+| Final combined training | ⏳ Not started |
 | Competition submission | ⬜ Not started |
 
-See **[DASHBOARD.md](DASHBOARD.md)** for full milestone tracker.
-
----
-
-## 📚 Documentation
-
-| File | What it covers |
-|------|---------------|
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Team git workflow, setup, etiquette |
-| [PROJECT_GUIDE.md](PROJECT_GUIDE.md) | Architecture, reward formulas, training curriculum, metrics |
-| [EXPERIMENTS.md](EXPERIMENTS.md) | Experiment catalog with hypotheses and decision tree |
-| [RESULTS.md](RESULTS.md) | Running comparison table of all experiments |
-| [BUILD_LOG.md](BUILD_LOG.md) | Chronological build history and resolved issues |
-| [DASHBOARD.md](DASHBOARD.md) | Milestone tracker and progress bar |
-| [SETUP_TEAMMATE.md](SETUP_TEAMMATE.md) | Legacy setup guide |
+See **[DASHBOARD.md](DASHBOARD.md)** for the full milestone tracker.
