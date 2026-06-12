@@ -64,6 +64,23 @@ These criteria apply to every experiment variant you run:
 
 ---
 
+## Dependency Tracking
+
+### Depends On (what I need from others)
+| What I Need | From Who | Why | Status |
+|------------|----------|-----|--------|
+| *(none — observation is the foundation layer)* | — | — | — |
+
+### Depended By (who is waiting on my results)
+| Who Needs Me | What They Need | Why | Status |
+|-------------|---------------|-----|--------|
+| **M1** — Architecture | Baseline observation pipeline (heatmap_obs) | M1 needs a working observation to test architecture variants against | ⏳ Pending — I produce this first |
+| **M2** — Reward | Baseline observation pipeline (heatmap_obs) | M2 needs observation to test reward shaping | ⏳ Pending — I produce this first |
+| **M4** — Hyperparameters | Baseline observation pipeline (heatmap_obs) | M4 needs observation for sweep experiments | ⏳ Pending — I produce this first |
+| **M5** — Training Strategy | Baseline observation pipeline (heatmap_obs) | M5 needs observation for full curriculum training | ⏳ Pending — I produce this first |
+
+---
+
 ## Next Steps
 
 - [ ] **Baseline:** heatmap_obs, stack_16, 50k steps

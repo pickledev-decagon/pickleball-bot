@@ -70,6 +70,20 @@ These criteria apply to every experiment variant you run:
 
 ---
 
+## Dependency Tracking
+
+### Depends On (what I need from others)
+| What I Need | From Who | Why | Status |
+|------------|----------|-----|--------|
+| Baseline observation (heatmap_obs) | **M3** — Observation | My hyperparameter sweeps need a working observation pipeline | ⏳ Waiting for M3 baseline |
+
+### Depended By (who is waiting on my results)
+| Who Needs Me | What They Need | Why | Status |
+|-------------|---------------|-----|--------|
+| **M5** — Training Strategy | Best hyperparameter config | M5 uses my best sweep results for the final curriculum training | ⏳ Waiting for my sweep |
+
+---
+
 ## Next Steps
 
 - [ ] Run `phase3_default.json` sweep (30 trials, ~X hours)

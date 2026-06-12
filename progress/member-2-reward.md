@@ -64,6 +64,20 @@ These criteria apply to every experiment variant you run:
 
 ---
 
+## Dependency Tracking
+
+### Depends On (what I need from others)
+| What I Need | From Who | Why | Status |
+|------------|----------|-----|--------|
+| Baseline observation (heatmap_obs) | **M3** — Observation | My reward variants need a working observation pipeline to test against | ⏳ Waiting for M3 baseline |
+
+### Depended By (who is waiting on my results)
+| Who Needs Me | What They Need | Why | Status |
+|-------------|---------------|-----|--------|
+| **M5** — Training Strategy | Trained reward checkpoint | M5's self-play needs my best reward config checkpoint | ⏳ Waiting for my baseline |
+
+---
+
 ## Next Steps
 
 - [ ] **Baseline:** heatmap_obs, stack_16, 50k steps

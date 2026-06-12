@@ -83,6 +83,23 @@ These criteria apply to every experiment variant you run:
 
 ---
 
+## Dependency Tracking
+
+### Depends On (what I need from others)
+| What I Need | From Who | Why | Status |
+|------------|----------|-----|--------|
+| Baseline observation (heatmap_obs) | **M3** — Observation | Full training pipeline needs observation to run | ⏳ Waiting for M3 baseline |
+| Architecture checkpoint | **M1** — Architecture | Stage 3 opponent buffer needs trained architecture model | ⏳ Waiting for M1 |
+| Reward config checkpoint | **M2** — Reward | Stage 3 needs best reward shaping params | ⏳ Waiting for M2 |
+| Best hyperparameters | **M4** — Hyperparameters | Uses best sweep params for final PPO config | ⏳ Waiting for M4 |
+
+### Depended By (who is waiting on my results)
+| Who Needs Me | What They Need | Why | Status |
+|-------------|---------------|-----|--------|
+| *(none — I produce the final combined model)* | — | — | — |
+
+---
+
 ## Next Steps
 
 - [ ] **Baseline:** heatmap_obs, stack_16, 300k steps (default curriculum)
