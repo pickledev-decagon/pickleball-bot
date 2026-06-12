@@ -135,6 +135,72 @@ python scripts/grid_search.py sweep_configs/phase3_focused.json --output results
 
 ---
 
+## 📋 Training Plan
+
+A 4-phase workflow for running, selecting, and combining experiments.
+
+```
+Trial experiments ──▶ Selection ──▶ Combination test ──▶ Final training
+  10k–20k steps         no training       50k steps            300k steps
+```
+
+### Training Length Comparison
+
+| Phase | Purpose | Steps (Proposed) | Our Setup | What This Means |
+|-------|---------|-----------------:|----------:|-----------------|
+| **Trial experiments** | Quickly test whether each idea helps | 10k–30k | 10k–20k | Short runs to filter ideas. Use `run_experiment.py --steps 10000 --envs 2`. Sweeps run 20k/trial. |
+| **Selection** | Compare which config performs better | No training | No training | Evaluate checkpoints from trials. 50 matches each side, record win rates. |
+| **Combination test** | Test selected best parts together | 30k–50k | 50k minimum | Combine best variant with baseline, run 50k. This is the **Done Criteria** check — evaluate both sides, 85% vs square = passed. |
+| **Final training** | Train the final selected model | 100k+ | **300k** (100k × 3 stages) | 3-stage curriculum: 30% no-op → 30% square → 40% self-play. Run by M5 once all checkpoints are in. |
+
+### Why 300k?
+
+The curriculum makes every step count:
+
+| Stage | Opponent | Steps | Goal |
+|-------|----------|------:|------|
+| 1 (30%) | No-op (stand still) | ~90k | Basic paddle control, ball tracking |
+| 2 (30%) | Square-motion (predictable) | ~90k | Timing, positioning, shot selection |
+| 3 (40%) | Self-play (past checkpoints) | ~120k | Strategy, adaptation, exploitation |
+
+300k is **headroom**, not overkill — the agent isn't wasting early episodes on hard opponents. If it converges earlier we can stop early.
+
+### Overfitting / Underfitting Risk
+
+| Phase | Risk | Why |
+|-------|------|-----|
+| Trials (10–20k) | **None** | Too short to converge or memorize. Binary litmus test. |
+| Combination (50k) | **Low** | Fixed opponent prevents overfitting. Enough for measurable skill. |
+| Final (300k) | **Very low** | Self-play buffer (5 checkpoints) provides opponent diversity — the main regularization. |
+
+### Per-Member Timeline
+
+```
+M3 (Observation)
+└── Baseline (heatmap_obs, stack_16) ─────────▶ Everyone depends on this
+                                                    │
+                         ┌──────────────────────────┼──────────────────────────┐
+                         ▼                          ▼                          ▼
+                  M1 (Architecture)          M2 (Reward)              M4 (Hyperparams)
+                  Trials → Sel → Combo      Trials → Sel → Combo     Trials → Sel
+                         │                          │                          │
+                         └──────────────────────────┼──────────────────────────┘
+                                                    ▼
+                                           M5 (Training Strategy)
+                                           Stage 1+2 → Stage 3 (self-play)
+                                           ──▶ Final model
+```
+
+### Key Rules
+
+1. **M3 produces the observation baseline first** — everyone else depends on it.
+2. **Each member runs their own trials + selection + combination test** independently.
+3. **M5 can start Stage 1+2** before receiving checkpoints from others.
+4. **M5 only starts Stage 3** after receiving at least 1 checkpoint from M1, M2, and M4.
+5. **Checkpoints go to Google Drive** — log the link in your member file's experiment log.
+
+---
+
 ## 🤝 Pull Request & Merge Process
 
 **Step 1:** When your experiment is complete and your code is ready, open a Pull Request on GitHub:
