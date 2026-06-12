@@ -11,7 +11,7 @@
 
 ## Current Status
 
-**⏳ Pending** — waiting for B1 smoke test + repo access
+**🟢 Ready to start**
 
 ---
 
