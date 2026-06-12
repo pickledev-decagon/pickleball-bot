@@ -115,10 +115,26 @@ python run_experiment.py --config baseline --steps 2000 --envs 2
 
 ### 5. Create your branch and start
 
+Each member creates their own branch:
+
+| Member | Command |
+|--------|---------|
+| **Amber** (Architecture) | `git checkout -b team/arch-variants` |
+| **Yenly** (Reward) | `git checkout -b team/reward-shaping` |
+| **Siao Xuan** (Observation) | `git checkout -b team/obs-variants` |
+| **Hui Xuan** (Training) | `git checkout -b team/training-strategy` |
+
 ```bash
-git checkout -b team/YOUR-AREA   # e.g. team/reward-shaping
-# ... experiment, log, commit, push ...
+# Push your branch to GitHub:
+git push -u origin team/your-branch-name
+
+# Then experiment, log, commit, and push regularly:
+git add <your-files>
+git commit -m "Describe what you changed"
+git push
 ```
+
+When ready, open a Pull Request on GitHub → Keven reviews and merges.
 
 ---
 
