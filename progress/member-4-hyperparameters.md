@@ -8,6 +8,8 @@
 | `sweep_configs/phase3_focused.json` | Focused grid search config (20 trials) |
 | `scripts/grid_search.py` | Random hyperparameter sweep script |
 
+> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. Sweep parameters depend on observation features — coordinate interface changes via PR.
+
 ---
 
 ## Current Status

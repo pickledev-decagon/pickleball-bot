@@ -5,7 +5,7 @@
 | File | Role |
 |------|------|
 | `agent/two_tower_cnn.py` | TwinNatureCNN, SpatialSoftmaxCNN, factory functions |
-| `env/wrapper.py` | EnhancedUnityWrapper (observation + action pipeline) |
+| `env/wrapper.py` | EnhancedUnityWrapper — **M1 owns**: preprocessing pipeline (frame conversion, resize, grayscale). **M3 owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate interface changes via PR. |
 
 ---
 

@@ -7,6 +7,8 @@
 | `agent/reward_shaping.py` | proximity, hit detection, placement, aggression rewards |
 | `agent/experiment_configs.py` | Named experiment presets (reward configs) |
 
+> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. If your reward config needs new observation features, coordinate via PR with the relevant owner.
+
 ---
 
 ## Current Status

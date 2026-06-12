@@ -363,3 +363,92 @@ python3 -m py_compile config.py agent/train_selfplay_v2.py run_experiment.py \
   scripts/grid_search.py scripts/validate_tracker.py agent/evaluate.py
 # Result: ALL 6 COMPILED OK
 ```
+
+---
+
+## Phase 0: Git Repo Initialization (May 20, 2026)
+
+**Org**: `pickledev-decagon` | **Repo**: `pickleball-bot` | **Visibility**: Private
+
+### What was done
+
+1. Created GitHub organization `pickledev-decagon`
+2. Created private repo `pickleball-bot` inside the org
+3. `.gitignore` created (excludes checkpoints, logs, results, archive, IDE files, captured frames, config.json)
+4. `git init` locally, removed nested `.git` from `dpickleball-ml-agents/`
+5. Initial commit: 40 core files (all pipeline code, configs, docs)
+6. Added `dpickleball-ml-agents` as git submodule (shallow clone, `--depth 1`)
+7. Pushed both commits to `origin/main`
+8. Created `CONTRIBUTING.md` with exact clone, setup, and workflow commands
+
+### Repo Structure
+
+```
+pickleball-bot (private)
+├── agent/
+│   ├── buffer.py                    # OpponentBuffer (sorted, max-size)
+│   ├── competition_export.py        # AsyncPolicy, TeamRight, TeamLeft
+│   ├── eval_harness.py              # MatchEvaluator (win-rate)
+│   ├── evaluate.py                  # Legacy re-export
+│   ├── experiment_configs.py        # Named experiment configs
+│   ├── reward_shaping.py            # Proximity, hit, placement, aggression
+│   ├── selfplay_callback.py         # Mid-training checkpoint → buffer
+│   ├── train_selfplay_v2.py         # Main training script
+│   ├── two_tower_cnn.py             # TwinNatureCNN, SpatialSoftmaxCNN
+│   └── wrapper_vec.py               # Parallel env creation (4L+4R)
+├── env/
+│   ├── preprocessing.py             # BallTracker, SmoothBallTracker, paddles
+│   └── wrapper.py                   # EnhancedUnityWrapper (left/right support)
+├── scripts/
+│   ├── grid_search.py               # Random hyperparameter sweep
+│   ├── test_competition_export.py   # AsyncPolicy dry-run test
+│   └── validate_tracker.py          # BallTracker validation harness
+├── sweep_configs/                   # Grid search configs
+├── config.py                        # Central configuration
+├── run_experiment.py                # Single experiment runner
+├── CONTRIBUTING.md                  # Team workflow guide
+├── DASHBOARD.md                     # Project status
+├── BUILD_LOG.md                     # This file
+├── RESULTS.md                       # Experiment results
+└── dpickleball-ml-agents/ → git submodule
+```
+
+### Team member setup
+
+Each member runs:
+```bash
+git clone https://github.com/pickledev-decagon/pickleball-bot.git
+cd pickleball-bot
+git submodule update --init --depth 1
+pip install -e ./dpickleball-ml-agents/ml-agents-envs
+export DPICKLEBALL_BUILD_PATH="/path/to/build"
+git checkout -b team/THEIR_BRANCH
+```
+
+---
+
+## Build 2026-06-12 — B1: 10k-Step Smoke Test
+
+**Result: ✅ PASSED**
+
+First training run with the new architecture (left/right wrapper, 16-frame stack, heatmap).
+
+| Metric | Value |
+|--------|-------|
+| Total steps | 10,000 |
+| Parallel envs | 2 (1 right + 1 left) |
+| Config | heatmap_obs (heatmap + 16-stack + grayscale) |
+| Duration | 319 sec (~5.3 min) |
+| FPS | 33–38 |
+| Explained variance | 0.022 (healthy) |
+| Clip fraction | 6.68% (<10% threshold) |
+| Value loss | 0.03 (stable) |
+| Crashes | 0 |
+
+**Validated:**
+- Left/right wrapper (env 0 = right, env 1 = left both ran)
+- 16-frame CNN observation shape
+- Heatmap overlay rendering
+- PPO training loop (no NaN, no explosion)
+- No shape mismatches
+- No import errors

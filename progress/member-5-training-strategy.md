@@ -9,6 +9,8 @@
 | `agent/buffer.py` | OpponentBuffer (sampling, eviction) |
 | `config.py` | Central config (training constants) |
 
+> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. Final training uses all members' components — coordinate integration issues via PR.
+
 ---
 
 ## Current Status

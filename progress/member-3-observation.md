@@ -5,6 +5,7 @@
 | File | Role |
 |------|------|
 | `env/preprocessing.py` | BallTracker, SmoothBallTracker, frame_diff, paddle detection |
+| `env/wrapper.py` (interface) | **M3 owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate changes with M1 via PR. |
 
 ---
 
