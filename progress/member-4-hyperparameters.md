@@ -50,7 +50,7 @@
 
 | Blocker | Date Opened | Status | Notes |
 |---------|-----------|--------|-------|
-| B1 smoke test needed | — | ⏳ Blocked | — |
+| B1 smoke test needed | — | ✅ Resolved | B1 passed 2026-06-12 (10k steps, 0 crashes) |
 
 ---
 

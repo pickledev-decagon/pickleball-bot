@@ -45,7 +45,7 @@
 
 | Blocker | Date Opened | Status | Notes |
 |---------|-----------|--------|-------|
-| B1 smoke test needed before full training | — | ⏳ Blocked | Waiting for Keven |
+| B1 smoke test needed before full training | — | ✅ Resolved | B1 passed 2026-06-12 (10k steps, 0 crashes) |
 
 ---
 

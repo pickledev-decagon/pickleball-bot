@@ -10,6 +10,7 @@
 Phase 0: Repo Setup           ████████████████████████████████ 100%
 Code Infrastructure (F1-F6)   ████████████████████████████████ 100%
 Bug Fixes                     ████████████████████████████████ 100%  (4 found, 4 fixed)
+B1 Smoke Test                 ████████████████████████████████ 100%  (10k steps, 0 crashes)
 ────────── Team Experiments Start ──────────
 Member 1: Architecture         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
 Member 2: Reward               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
@@ -26,13 +27,13 @@ Competition Submission         ░░░░░░░░░░░░░░░░�
 
 | Area | Member | Branch | Status | Best Win Rate (right) | Best Win Rate (left) | Current Opponent | Blockers |
 |------|--------|--------|--------|----------------------|---------------------|------------------|----------|
-| Architecture | **Member 1** | `team/arch-variants` | ⏳ Pending | — | — | — | B1 smoke test needed |
-| Reward | **Member 2** | `team/reward-shaping` | ⏳ Pending | — | — | — | Repo access + B1 |
-| Observation | **Member 3** | `team/obs-variants` | ⏳ Pending | — | — | — | Repo access + B1 |
-| Hyperparameters | **Member 4** | `team/hyperparams` | ⏳ Pending | — | — | — | Repo access + B1 |
-| Training Strategy | **Member 5** | `team/training-strategy` | ⏳ Pending | — | — | — | Repo access + B1 |
+| Architecture | **Member 1** | `team/arch-variants` | 🟢 Ready | — | — | — | — |
+| Reward | **Member 2** | `team/reward-shaping` | 🟢 Ready | — | — | — | — |
+| Observation | **Member 3** | `team/obs-variants` | 🟢 Ready | — | — | — | — |
+| Hyperparameters | **Member 4** | `team/hyperparams` | 🟢 Ready | — | — | — | — |
+| Training Strategy | **Member 5** | `team/training-strategy` | 🟢 Ready | — | — | — | — |
 
-**🟢 Active** · **🟡 In Progress** · **⏳ Pending** · **🔴 Blocked** · **✅ Complete**
+**🟢 Ready** · 🟡 In Progress · ⏳ Pending · 🔴 Blocked · ✅ Complete
 
 ---
 
@@ -54,12 +55,14 @@ B1 Smoke Test (10k steps) ──gate──▶ All 5 Members Train in Parallel
                          Competition Submission Package
 ```
 
-### Current Gate: B1 (10k Smoke Test)
+### Current Gate: ✅ B1 Smoke Test Passed
 
 | Task | Status | Est. Time |
 |------|--------|-----------|
-| B1: Run 10k steps with left/right wrapper | ⏳ Pending | 5-10 min |
-| Validate no crashes, shape match, curriculum | ⏳ Pending | — |
+| B1: Run 10k steps with left/right wrapper | ✅ **Passed** | 5.3 min |
+| Validate no crashes, shape match, curriculum | ✅ No errors | — |
+
+**Pipeline validated. Members can begin training.**
 
 ---
 
