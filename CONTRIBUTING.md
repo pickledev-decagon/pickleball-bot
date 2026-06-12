@@ -256,6 +256,10 @@ git push -u origin team/YOUR_BRANCH
 - TensorBoard log directories — debugging/tuning artifacts
 - Final trained model for competition submission
 
+**Shared Drive folder:** https://drive.google.com/drive/folders/1Mi7xp03CszctgAkf6dkiUdYPrH6Z5ibz
+
+Upload your checkpoints here and paste the file link in your experiment log.
+
 After uploading a checkpoint, add a row to `checkpoints/README.md`:
 
 ```markdown
