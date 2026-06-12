@@ -16,6 +16,15 @@
 
 > **`env/wrapper.py` note:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale). Siao Xuan owns ball detection + heatmap rendering consumed by the wrapper. Coordinate changes via PR.
 
+### ⚠️ Branch Rule (Social Contract)
+
+GitHub free org doesn't enforce branch protection, so this is a **team rule**:
+
+> **Push only to `team/*` branches. Never push to `main` directly.**
+> All changes go through Pull Requests. Keven reviews and merges.
+
+If someone accidentally pushes to `main`, see the recovery guide below.
+
 ### Workflow
 
 ```
@@ -205,3 +214,44 @@ pickleball-bot/
 | Competition submission | ⬜ Not started |
 
 See **[DASHBOARD.md](DASHBOARD.md)** for the full milestone tracker.
+
+---
+
+## 🛟 If Someone Pushes to `main` by Accident
+
+**Scenario:** A member runs `git push origin main` instead of their branch.
+
+**On your machine (Keven), fix it:**
+
+```bash
+# 1. Check what happened
+git log origin/main -5 --oneline
+
+# 2. Find the last good commit before the accidental push
+#    Look for the commit that was there before.
+#    Let's say the bad commit is at the top, good one below it.
+
+# 3. Reset main back to the last good commit and force push
+git checkout main
+git reset --hard <last-good-commit-hash>
+git push --force origin main
+
+# 4. Tell the member to rebase their branch
+#    On their machine:
+git checkout team/their-branch
+git rebase origin/main
+git push --force origin team/their-branch
+```
+
+**What if you're not sure which commit was good?**
+
+```bash
+# Check the remote directly
+git log origin/main -10 --oneline
+
+# The commits YOU pushed (fix #1, fix #2, etc.) are good.
+# If a commit message says something you didn't write → that's the bad one.
+# Reset to just before that commit.
+```
+
+This is safe because only your team uses the repo. A force push on `main` won't break anything as long as everyone rebases their branches after.
