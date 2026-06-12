@@ -85,7 +85,7 @@ These criteria apply to every experiment variant you run:
 
 ## Next Steps
 
-- [ ] Run default curriculum baseline (300k steps)
+- [ ] **Baseline:** heatmap_obs, stack_16, 300k steps (default curriculum)
 - [ ] Test alternative stage splits
 - [ ] Implement weighted buffer sampling
 - [ ] Push best config row to RESULTS.md

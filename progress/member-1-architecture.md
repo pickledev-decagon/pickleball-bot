@@ -63,6 +63,6 @@ These criteria apply to every experiment variant you run:
 
 ## Next Steps
 
-- [ ] Run TwinNatureCNN baseline (50k steps, heatmap_obs, stack_16)
+- [ ] **Baseline:** heatmap_obs, stack_16, 50k steps (TwinNatureCNN)
 - [ ] Compare SpatialSoftmaxCNN vs TwinNatureCNN
 - [ ] Push best config row to RESULTS.md

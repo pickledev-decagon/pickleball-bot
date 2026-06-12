@@ -66,7 +66,7 @@ These criteria apply to every experiment variant you run:
 
 ## Next Steps
 
-- [ ] Run baseline (50k steps, heatmap_obs, stack_16)
+- [ ] **Baseline:** heatmap_obs, stack_16, 50k steps
 - [ ] Run aggression bonus variant
 - [ ] Run placement bonus variant
 - [ ] Run combined variant

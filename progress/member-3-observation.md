@@ -66,7 +66,7 @@ These criteria apply to every experiment variant you run:
 
 ## Next Steps
 
-- [ ] Run heatmap_obs baseline (50k steps)
+- [ ] **Baseline:** heatmap_obs, stack_16, 50k steps
 - [ ] Compare stack_16 vs stack_32
 - [ ] Compare heatmap vs no heatmap
 - [ ] Push best config row to RESULTS.md
