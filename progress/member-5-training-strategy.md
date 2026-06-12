@@ -17,6 +17,8 @@
 
 **⏳ Pending** — waiting for B1 smoke test + repo access
 
+> **📦 Checkpoint Dependency:** Stage 3 (self-play) of the curriculum requires trained checkpoints from M1–M4 to populate the opponent buffer. You can start with Stage 1+2 experiments (no-op → square opponents) while waiting for teammates to produce their checkpoints. Coordinate with members via shared Google Drive folder.
+
 ---
 
 ## Experiment Log
