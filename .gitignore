@@ -39,3 +39,6 @@ phase-4*/
 # === IDE ===
 .vscode/
 .idea/
+
+# === Local-only docs ===
+git-recovery-handbook.md

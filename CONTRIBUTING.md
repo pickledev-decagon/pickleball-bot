@@ -333,7 +333,7 @@ Trial experiments ──▶ Selection ──▶ Combination test ──▶ Final
 | **Trial experiments** | Quickly test whether each idea helps | 10k–30k | 10k–20k | Short runs to filter ideas. Use `run_experiment.py --steps 10000 --envs 2`. Sweeps run 20k/trial. |
 | **Selection** | Compare which config performs better | No training | No training | Evaluate checkpoints from trials. 50 matches each side, record win rates. |
 | **Combination test** | Test selected best parts together | 30k–50k | 50k minimum | Combine best variant with baseline, run 50k. This is the **Done Criteria** check — evaluate both sides, 85% vs square = passed. |
-| **Final training** | Train the final selected model | 100k+ | **300k** (100k × 3 stages) | 3-stage curriculum: 30% no-op → 30% square → 40% self-play. Run by M5 once all checkpoints are in. |
+| **Final training** | Train the final selected model | 100k+ | **300k** (100k × 3 stages) | 3-stage curriculum: 30% no-op → 30% square → 40% self-play. Run by Hui Xuan once all checkpoints are in. |
 
 ### Why 300k?
 
