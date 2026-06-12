@@ -1,8 +1,8 @@
 # dPickleBall Bot — Project Dashboard
 
-**Generated:** May 20, 2026
+**Generated:** June 12, 2026
 **Code-only work:** 100% complete
-**Training runs:** 0 (awaiting go-ahead)
+**Training runs:** 1 (B1 smoke test passed ✅)
 
 ---
 
@@ -34,7 +34,7 @@
 
 | Task | Est. Time | Unlocks | 
 |------|-----------|---------|
-| **B1: 10k-step smoke test** ⏳ | **5–10 min** | **_Gate to all training_** |
+| **✅ B1: 10k-step smoke test** | **5 min** | **_Gate passed — pipeline validated_** |
 | **B2: First 50k–100k training run** | 30–60 min | First checkpoint + baseline win rates |
 | **B3: Self-play with populated buffer** | During B2 | Agent improves by playing itself |
 | **B4: Grid search (sweep)** | 2–4 hrs | Optimal hyperparameters |
@@ -48,11 +48,11 @@
 ## 📈 Time to Competition
 
 ```
-MINIMUM VIABLE ──▶  B1 (10m) → B2 (1h) → S1+S2 (45m)  =  ~2 hours
+MINIMUM VIABLE ──▶  B2 (1h) → S1+S2 (45m)  =  ~2 hours
                          ↓
                     First real checkpoint + win rates
 
-COMPETITIVE ──────▶  B1 (10m) → B2 (1h) → B4 (3h) → B5 (1h) → S1+S2 (45m)  =  ~6 hours
+COMPETITIVE ──────▶  B2 (1h) → B4 (3h) → B5 (1h) → S1+S2 (45m)  =  ~6 hours
                          ↓
                     Tuned hyperparameters + strong baseline
 
@@ -64,13 +64,13 @@ ALL-IN ───────────▶  Full plan above + B3 iteration loop
 ## 🧩 Where All Effort Has Gone
 
 ```
-Code & Architecture Work  ████████████████████████████████  80%  (all 6 gaps + cleanup)
-Validation Testing        ████                              10%  (A1 + A2 passed)
-Training Runs              █                                 2%  (0 done)
+Code & Architecture Work  ████████████████████████████████  75%  (all 6 gaps + cleanup)
+Validation Testing        ██████                            10%  (A1 + A2 + B1 passed)
+Training Runs              ████                              8%  (B1: 10k steps, 0 crashes)
 Competition Packaging      ██                                4%  (planned)
-Buffer/Unused Code         █                                  4%  (legacy / archive)
+Buffer/Unused Code         ██                                3%  (legacy / archive)
 ```
 
 ## 🔴 Key Risk
 
-**The entire pipeline is built, compiled, and validated in dry-run mode — but zero steps have been run in Unity with the new architecture.** B1 (10k smoke test) is the only thing between "code that should work" and "code that definitely works."
+**B1 gate is passed — the pipeline works end-to-end.** The key risk now is team coordination: merging 5 members' independent experiments into a coherent final model. Use PROGRESS.md + RESULTS.md to track progress across all areas.
