@@ -1,11 +1,11 @@
-# Area: Model Architecture — Member 1
+# Area: Model Architecture — Amber
 
 ## Assigned Files
 
 | File | Role |
 |------|------|
 | `agent/two_tower_cnn.py` | TwinNatureCNN, SpatialSoftmaxCNN, factory functions |
-| `env/wrapper.py` | EnhancedUnityWrapper — **M1 owns**: preprocessing pipeline (frame conversion, resize, grayscale). **M3 owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate interface changes via PR. |
+| `env/wrapper.py` | EnhancedUnityWrapper — **Amber owns**: preprocessing pipeline (frame conversion, resize, grayscale). **Siao Xuan owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate interface changes via PR. |
 
 ---
 
@@ -66,12 +66,12 @@ These criteria apply to every experiment variant you run:
 ### Depends On (what I need from others)
 | What I Need | From Who | Why | Status |
 |------------|----------|-----|--------|
-| Baseline observation (heatmap_obs) | **M3** — Observation | My architecture variants need a working observation pipeline to test against | ⏳ Waiting for M3 baseline |
+| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | My architecture variants need a working observation pipeline to test against | ⏳ Waiting for Siao Xuan baseline |
 
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |
 |-------------|---------------|-----|--------|
-| **M5** — Training Strategy | Trained architecture checkpoint | M5's Stage 3 opponent buffer needs my best model checkpoint | ⏳ Waiting for my baseline |
+| **Hui Xuan** — Training Strategy | Trained architecture checkpoint | Hui Xuan's Stage 3 opponent buffer needs my best model checkpoint | ⏳ Waiting for my baseline |
 
 ---
 

@@ -4,13 +4,13 @@
 
 | Member | Branch | Area | Files They Own |
 |--------|--------|------|---------------|
-| **Member 1** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline: frame conversion, resize, grayscale) |
-| **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py` (BallTracker, heatmap, frame diff), ball detection + heatmap rendering (via `env/wrapper.py`) |
-| **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
-| **Member 5** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
+| **Amber** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline: frame conversion, resize, grayscale) |
+| **Yenly** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
+| **Siao Xuan** | `team/obs-variants` | Observation | `env/preprocessing.py` (BallTracker, heatmap, frame diff), ball detection + heatmap rendering (via `env/wrapper.py`) |
+| **Keven** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
+| **Hui Xuan** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
-**Note on `env/wrapper.py`:** M1 owns the observation preprocessing pipeline (frame conversion, resize, grayscale) inside this file. M3 owns the ball detection and heatmap rendering logic that the wrapper consumes. Both coordinate changes to shared interfaces via PR.
+**Note on `env/wrapper.py`:** Amber owns the observation preprocessing pipeline (frame conversion, resize, grayscale) inside this file. Siao Xuan owns the ball detection and heatmap rendering logic that the wrapper consumes. Both coordinate changes to shared interfaces via PR.
 
 **Rule:** Only modify files in your assigned area. If you need a change in a shared file, open a small PR targeting `main` first.
 
@@ -355,27 +355,27 @@ The curriculum makes every step count:
 ### Per-Member Timeline
 
 ```
-M3 (Observation)
+Siao Xuan (Observation)
 └── Baseline (heatmap_obs, stack_16) ─────────▶ Everyone depends on this
                                                     │
                          ┌──────────────────────────┼──────────────────────────┐
                          ▼                          ▼                          ▼
-                  M1 (Architecture)          M2 (Reward)              M4 (Hyperparams)
+                  Amber (Architecture)        Yenly (Reward)            Keven (Hyperparams)
                   Trials → Sel → Combo      Trials → Sel → Combo     Trials → Sel
                          │                          │                          │
                          └──────────────────────────┼──────────────────────────┘
                                                     ▼
-                                           M5 (Training Strategy)
+                                           Hui Xuan (Training Strategy)
                                            Stage 1+2 → Stage 3 (self-play)
                                            ──▶ Final model
 ```
 
 ### Key Rules
 
-1. **M3 produces the observation baseline first** — everyone else depends on it.
+1. **Siao Xuan produces the observation baseline first** — everyone else depends on it.
 2. **Each member runs their own trials + selection + combination test** independently.
-3. **M5 can start Stage 1+2** before receiving checkpoints from others.
-4. **M5 only starts Stage 3** after receiving at least 1 checkpoint from M1, M2, and M4.
+3. **Hui Xuan can start Stage 1+2** before receiving checkpoints from others.
+4. **Hui Xuan only starts Stage 3** after receiving at least 1 checkpoint from Amber, Yenly, and Keven.
 5. **Checkpoints go to Google Drive** — log the link in your member file's experiment log.
 
 ---

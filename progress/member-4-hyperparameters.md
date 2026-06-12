@@ -1,4 +1,4 @@
-# Area: Hyperparameters — Member 4
+# Area: Hyperparameters — Keven
 
 ## Assigned Files
 
@@ -8,7 +8,7 @@
 | `sweep_configs/phase3_focused.json` | Focused grid search config (20 trials) |
 | `scripts/grid_search.py` | Random hyperparameter sweep script |
 
-> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. Sweep parameters depend on observation features — coordinate interface changes via PR.
+> **`env/wrapper.py` split awareness:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale); Siao Xuan owns ball detection + heatmap rendering. Sweep parameters depend on observation features — coordinate interface changes via PR.
 
 ---
 
@@ -75,12 +75,12 @@ These criteria apply to every experiment variant you run:
 ### Depends On (what I need from others)
 | What I Need | From Who | Why | Status |
 |------------|----------|-----|--------|
-| Baseline observation (heatmap_obs) | **M3** — Observation | My hyperparameter sweeps need a working observation pipeline | ⏳ Waiting for M3 baseline |
+| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | My hyperparameter sweeps need a working observation pipeline | ⏳ Waiting for Siao Xuan baseline |
 
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |
 |-------------|---------------|-----|--------|
-| **M5** — Training Strategy | Best hyperparameter config | M5 uses my best sweep results for the final curriculum training | ⏳ Waiting for my sweep |
+| **Hui Xuan** — Training Strategy | Best hyperparameter config | Hui Xuan uses my best sweep results for the final curriculum training | ⏳ Waiting for my sweep |
 
 ---
 

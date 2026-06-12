@@ -16,11 +16,11 @@ This directory tracks each team member's experiments, decisions, blockers, and n
 
 | File | Who Owns | What It Tracks |
 |------|----------|---------------|
-| `member-1-architecture.md` | Member 1 | CNN architectures, feature extractors |
-| `member-2-reward.md` | Member 2 | Reward shaping variants, weights |
-| `member-3-observation.md` | Member 3 | Frame stack, heatmap, frame diff, preprocessing |
-| `member-4-hyperparameters.md` | Member 4 | Learning rate, entropy, batch size sweeps |
-| `member-5-training-strategy.md` | Member 5 | Curriculum stages, buffer strategy, checkpointing |
+| `member-1-architecture.md` | Amber | CNN architectures, feature extractors |
+| `member-2-reward.md` | Yenly | Reward shaping variants, weights |
+| `member-3-observation.md` | Siao Xuan | Frame stack, heatmap, frame diff, preprocessing |
+| `member-4-hyperparameters.md` | Keven | Learning rate, entropy, batch size sweeps |
+| `member-5-training-strategy.md` | Hui Xuan | Curriculum stages, buffer strategy, checkpointing |
 
 ### Typical Experiment Cycle
 

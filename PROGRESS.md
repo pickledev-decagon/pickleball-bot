@@ -12,11 +12,11 @@ Code Infrastructure (F1-F6)   ████████████████�
 Bug Fixes                     ████████████████████████████████ 100%  (4 found, 4 fixed)
 B1 Smoke Test                 ████████████████████████████████ 100%  (10k steps, 0 crashes)
 ────────── Team Experiments Start ──────────
-Member 1: Architecture         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-Member 2: Reward               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-Member 3: Observation          ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-Member 4: Hyperparameters      ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
-Member 5: Training Strategy    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+Member 1: Amber (Architecture)   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+Member 2: Yenly (Reward)         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+Member 3: Siao Xuan (Observation) ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+Member 4: Keven (Hyperparameters) ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
+Member 5: Hui Xuan (Training)    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
 Final Combined Training Run    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
 Competition Submission         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%
 ```

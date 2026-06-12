@@ -427,7 +427,7 @@ ep_rew_mean not improving?
 └─ Opponent too easy? → remove curriculum → try no_curriculum
 ```
 
-### 12.1 Observation Variants (Member 3)
+### 12.1 Observation Variants (Siao Xuan)
 
 | Variant | What | Risk | Config |
 |---------|------|------|--------|
@@ -436,7 +436,7 @@ ep_rew_mean not improving?
 | **Ball heatmap** | Overlay ball (x,y) as Gaussian on grayscale | Only as good as BallTracker | `heatmap_obs` |
 | **Stack depth** | Test 2, 16, 32 vs current 16 frames | Trade-off: speed vs temporal info | `stack_2`, `stack_16`, `stack_32` |
 
-### 12.2 Architecture Variants (Member 1)
+### 12.2 Architecture Variants (Amber)
 
 | Variant | What | Risk | Config |
 |---------|------|------|--------|
@@ -446,7 +446,7 @@ ep_rew_mean not improving?
 | **Dueling architecture** | Separate advantage/value streams | More data needed | Code change |
 | **Residual connections** | Skip connections in CNN towers | Marginal benefit expected | Code change |
 
-### 12.3 Reward Shaping Variants (Member 2)
+### 12.3 Reward Shaping Variants (Yenly)
 
 | Variant | What | Risk | Config |
 |---------|------|------|--------|
@@ -455,7 +455,7 @@ ep_rew_mean not improving?
 | **Placement bonus** | `+0.3` for corner/far-back shots | Niche, may not generalize | Code change |
 | **Combined** | Aggression + placement + hit bonus | Over-engineering risk | Code change |
 
-### 12.4 Hyperparameter Variants (Member 4)
+### 12.4 Hyperparameter Variants (Keven)
 
 | Parameter | Baseline | Sweep Range | Configs |
 |-----------|----------|-------------|---------|
@@ -466,7 +466,7 @@ ep_rew_mean not improving?
 | `clip_range` | 0.2 | choice(0.1, 0.15, 0.2, 0.3) | — |
 | `n_epochs` | 4 | choice(3, 4, 8) | — |
 
-### 12.5 Training Strategy Variants (Member 5)
+### 12.5 Training Strategy Variants (Hui Xuan)
 
 | Variant | What | Risk | Config |
 |---------|------|------|--------|

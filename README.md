@@ -8,13 +8,13 @@
 
 | Member | Branch | Area | Files |
 |--------|--------|------|-------|
-| **Member 1** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
-| **Member 2** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| **Member 3** | `team/obs-variants` | Observation | `env/preprocessing.py`, ball detection + heatmap (via `env/wrapper.py`) |
-| **Member 4** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
-| **Member 5** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
+| **Amber** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
+| **Yenly** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
+| **Siao Xuan** | `team/obs-variants` | Observation | `env/preprocessing.py`, ball detection + heatmap (via `env/wrapper.py`) |
+| **Keven** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
+| **Hui Xuan** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
-> **`env/wrapper.py` note:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale). M3 owns ball detection + heatmap rendering consumed by the wrapper. Coordinate changes via PR.
+> **`env/wrapper.py` note:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale). Siao Xuan owns ball detection + heatmap rendering consumed by the wrapper. Coordinate changes via PR.
 
 ### Workflow
 

@@ -1,11 +1,11 @@
-# Area: Observation — Member 3
+# Area: Observation — Siao Xuan
 
 ## Assigned Files
 
 | File | Role |
 |------|------|
 | `env/preprocessing.py` | BallTracker, SmoothBallTracker, frame_diff, paddle detection |
-| `env/wrapper.py` (interface) | **M3 owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate changes with M1 via PR. |
+| `env/wrapper.py` (interface) | **Siao Xuan owns**: ball detection + heatmap rendering consumed by the wrapper. Coordinate changes with Amber via PR. |
 
 ---
 
@@ -74,10 +74,10 @@ These criteria apply to every experiment variant you run:
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |
 |-------------|---------------|-----|--------|
-| **M1** — Architecture | Baseline observation pipeline (heatmap_obs) | M1 needs a working observation to test architecture variants against | ⏳ Pending — I produce this first |
-| **M2** — Reward | Baseline observation pipeline (heatmap_obs) | M2 needs observation to test reward shaping | ⏳ Pending — I produce this first |
-| **M4** — Hyperparameters | Baseline observation pipeline (heatmap_obs) | M4 needs observation for sweep experiments | ⏳ Pending — I produce this first |
-| **M5** — Training Strategy | Baseline observation pipeline (heatmap_obs) | M5 needs observation for full curriculum training | ⏳ Pending — I produce this first |
+| **Amber** — Architecture | Baseline observation pipeline (heatmap_obs) | Amber needs a working observation to test architecture variants against | ⏳ Pending — I produce this first |
+| **Yenly** — Reward | Baseline observation pipeline (heatmap_obs) | Yenly needs observation to test reward shaping | ⏳ Pending — I produce this first |
+| **Keven** — Hyperparameters | Baseline observation pipeline (heatmap_obs) | Keven needs observation for sweep experiments | ⏳ Pending — I produce this first |
+| **Hui Xuan** — Training Strategy | Baseline observation pipeline (heatmap_obs) | Hui Xuan needs observation for full curriculum training | ⏳ Pending — I produce this first |
 
 ---
 

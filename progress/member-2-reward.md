@@ -1,4 +1,4 @@
-# Area: Reward Functions — Member 2
+# Area: Reward Functions — Yenly
 
 ## Assigned Files
 
@@ -7,7 +7,7 @@
 | `agent/reward_shaping.py` | proximity, hit detection, placement, aggression rewards |
 | `agent/experiment_configs.py` | Named experiment presets (reward configs) |
 
-> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. If your reward config needs new observation features, coordinate via PR with the relevant owner.
+> **`env/wrapper.py` split awareness:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale); Siao Xuan owns ball detection + heatmap rendering. If your reward config needs new observation features, coordinate via PR with the relevant owner.
 
 ---
 
@@ -69,12 +69,12 @@ These criteria apply to every experiment variant you run:
 ### Depends On (what I need from others)
 | What I Need | From Who | Why | Status |
 |------------|----------|-----|--------|
-| Baseline observation (heatmap_obs) | **M3** — Observation | My reward variants need a working observation pipeline to test against | ⏳ Waiting for M3 baseline |
+| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | My reward variants need a working observation pipeline to test against | ⏳ Waiting for Siao Xuan baseline |
 
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |
 |-------------|---------------|-----|--------|
-| **M5** — Training Strategy | Trained reward checkpoint | M5's self-play needs my best reward config checkpoint | ⏳ Waiting for my baseline |
+| **Hui Xuan** — Training Strategy | Trained reward checkpoint | Hui Xuan's self-play needs my best reward config checkpoint | ⏳ Waiting for my baseline |
 
 ---
 

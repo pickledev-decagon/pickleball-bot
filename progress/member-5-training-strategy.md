@@ -1,4 +1,4 @@
-# Area: Training Strategy — Member 5
+# Area: Training Strategy — Hui Xuan
 
 ## Assigned Files
 
@@ -9,7 +9,7 @@
 | `agent/buffer.py` | OpponentBuffer (sampling, eviction) |
 | `config.py` | Central config (training constants) |
 
-> **`env/wrapper.py` split awareness:** M1 owns the preprocessing pipeline (frame conversion, resize, grayscale); M3 owns ball detection + heatmap rendering. Final training uses all members' components — coordinate integration issues via PR.
+> **`env/wrapper.py` split awareness:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale); Siao Xuan owns ball detection + heatmap rendering. Final training uses all members' components — coordinate integration issues via PR.
 
 ---
 
@@ -88,10 +88,10 @@ These criteria apply to every experiment variant you run:
 ### Depends On (what I need from others)
 | What I Need | From Who | Why | Status |
 |------------|----------|-----|--------|
-| Baseline observation (heatmap_obs) | **M3** — Observation | Full training pipeline needs observation to run | ⏳ Waiting for M3 baseline |
-| Architecture checkpoint | **M1** — Architecture | Stage 3 opponent buffer needs trained architecture model | ⏳ Waiting for M1 |
-| Reward config checkpoint | **M2** — Reward | Stage 3 needs best reward shaping params | ⏳ Waiting for M2 |
-| Best hyperparameters | **M4** — Hyperparameters | Uses best sweep params for final PPO config | ⏳ Waiting for M4 |
+| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | Full training pipeline needs observation to run | ⏳ Waiting for Siao Xuan baseline |
+| Architecture checkpoint | **Amber** — Architecture | Stage 3 opponent buffer needs trained architecture model | ⏳ Waiting for Amber |
+| Reward config checkpoint | **Yenly** — Reward | Stage 3 needs best reward shaping params | ⏳ Waiting for Yenly |
+| Best hyperparameters | **Keven** — Hyperparameters | Uses best sweep params for final PPO config | ⏳ Waiting for Keven |
 
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |

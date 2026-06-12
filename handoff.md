@@ -21,22 +21,20 @@ A pickleball RL agent trained with PPO (SB3) for a course competition. The agent
 
 ### Team Structure (5 members)
 
-| Member | Area | Branch | Files |
-|--------|------|--------|-------|
-| M1 | Architecture | `team/arch-variants` | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
-| M2 | Reward | `team/reward-shaping` | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| M3 | Observation | `team/obs-variants` | `env/preprocessing.py` (BallTracker, heatmap) |
-| M4 | Hyperparameters | `team/hyperparams` | `sweep_configs/*.json`, `scripts/grid_search.py` |
-| M5 | Training Strategy | `team/training-strategy` | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
+| Amber | Architecture | `team/arch-variants` | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
+| Yenly | Reward | `team/reward-shaping` | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
+| Siao Xuan | Observation | `team/obs-variants` | `env/preprocessing.py` (BallTracker, heatmap) |
+| Keven | Hyperparameters | `team/hyperparams` | `sweep_configs/*.json`, `scripts/grid_search.py` |
+| Hui Xuan | Training Strategy | `team/training-strategy` | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
 
-**Important:** `env/wrapper.py` is split — M1 owns the preprocessing pipeline (frame conversion, resize, grayscale), M3 owns ball detection + heatmap rendering consumed by the wrapper. Both coordinate via PR.
+**Important:** `env/wrapper.py` is split — Amber owns the preprocessing pipeline (frame conversion, resize, grayscale), Siao Xuan owns ball detection + heatmap rendering consumed by the wrapper. Both coordinate via PR.
 
 ### Dependency Chain
 ```
-M3 (Observation) produces baseline first
-  └── Everyone depends on M3's baseline (heatmap_obs, stack_16)
-M1, M2, M4 → work independently after M3 baseline
-  └── M5 depends on checkpoints from M1, M2, M4 for Stage 3 self-play
+Siao Xuan (Observation) produces baseline first
+  └── Everyone depends on Siao Xuan's baseline (heatmap_obs, stack_16)
+Amber, Yenly, Keven → work independently after Siao Xuan baseline
+  └── Hui Xuan depends on checkpoints from Amber, Yenly, Keven for Stage 3 self-play
 ```
 
 ## Training Plan (4-Phase Workflow)
