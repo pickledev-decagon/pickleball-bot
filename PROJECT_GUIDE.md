@@ -384,3 +384,95 @@ Key constraint: **no extra Python packages.** Only numpy, opencv, torch — all 
 | **Competitive Self-Play** (OpenAI, 2017) | Opponent diversity prevents overfitting; dense reward annealing helps | OpponentBuffer with random sampling; reward schedule |
 | **Implementation Matters in Deep Policy Gradients** (ICLR, 2020) | Code details matter more than algorithm choice | Focus on obs preprocessing, reward shaping, curriculum — not PPO variants |
 | **Lecturer feedback** | CPU=GPU for this env; 8 envs sweet spot; curriculum helps | All three applied in v2 |
+
+---
+
+## 12. Experiment Catalog
+
+Every approach we try, with hypothesis, risk, and validation metric.
+Detailed per-member experiment logs are in `progress/member-*-area.md`.
+
+### Metrics Interpretation Primer
+
+| Metric | What It Measures | Good Sign | Bad Sign |
+|--------|-----------------|-----------|----------|
+| `entropy` | Policy randomness. Starts at `-3.3` (max entropy for `3×3` actions). | `-3.5` to `-2.5` (slowly decreasing) | `> -1.5` = collapsed; `< -3.5` = still random |
+| `approx_kl` | How much the policy changed in this update | `< 0.01` (stable) | `> 0.02` (destabilizing) |
+| `value_loss` | Critic prediction error | Decreasing | Increasing (critic diverging) |
+| `explained_variance` | How well critic explains returns | Increasing toward `1.0` | Stuck at `0.0` (critic learning nothing) |
+| `policy_loss` | Policy gradient magnitude | Noisy, non-zero | Constant zero (policy not updating) |
+| `fps` | Training speed | Consistent | Dropping (bottleneck) |
+| `ep_rew_mean` | Avg episode return | Trending up | Flat |
+| `ep_len_mean` | Avg episode length | Decreasing (faster points) | Increasing (longer rallies) |
+
+### Decision Tree
+
+```
+entropy crashed to -1.0 early?
+├─ Yes → ent_coef too low, try entropy_0.05 or entropy_0.01 (baseline)
+└─ No  → keep current or try entropy_0.0
+
+approx_kl > 0.02?
+├─ Yes → updates too large, lower lr → try lr_1e-4
+└─ No  → can try higher lr or baseline
+
+fps lower than expected?
+├─ Yes → reduce obs complexity → try stack_2 or grayscale (baseline)
+└─ No  → can try rgb_obs or more envs
+
+ep_rew_mean not improving?
+├─ Ball never hit? → check reward shaping → try hit_bonus_high
+├─ Ball hit but not scored? → agent not aggressive → try aggression_bonus
+├─ Opponent too hard? → add curriculum (baseline has it)
+└─ Opponent too easy? → remove curriculum → try no_curriculum
+```
+
+### 12.1 Observation Variants (Member 3)
+
+| Variant | What | Risk | Config |
+|---------|------|------|--------|
+| **RGB** | Keep 3-channel color instead of grayscale | 3× input size, slower training | `rgb_obs` |
+| **Frame difference** | Stack frame-to-frame diffs | Loses static context (court lines) | `frame_diff` |
+| **Ball heatmap** | Overlay ball (x,y) as Gaussian on grayscale | Only as good as BallTracker | `heatmap_obs` |
+| **Stack depth** | Test 2, 16, 32 vs current 16 frames | Trade-off: speed vs temporal info | `stack_2`, `stack_16`, `stack_32` |
+
+### 12.2 Architecture Variants (Member 1)
+
+| Variant | What | Risk | Config |
+|---------|------|------|--------|
+| **TwinNatureCNN** | Separate CNN towers for policy/value | 2× CNN params, slightly slower | Code change |
+| **TwinNatureCNN large** | features_dim=512 | Overfitting on small steps | Code change |
+| **SpatialSoftmaxCNN** | Coordinate-aware features instead of flattened conv | Unproven in this domain | Code change |
+| **Dueling architecture** | Separate advantage/value streams | More data needed | Code change |
+| **Residual connections** | Skip connections in CNN towers | Marginal benefit expected | Code change |
+
+### 12.3 Reward Shaping Variants (Member 2)
+
+| Variant | What | Risk | Config |
+|---------|------|------|--------|
+| **Aggression bonus** | `+0.1` per frame ball on opponent side | May over-aggress and leave own side open | `aggression_bonus` |
+| **High hit bonus** | `+1.0` per paddle contact (up from `+0.5`) | Reward hacking | `hit_bonus_high` |
+| **Placement bonus** | `+0.3` for corner/far-back shots | Niche, may not generalize | Code change |
+| **Combined** | Aggression + placement + hit bonus | Over-engineering risk | Code change |
+
+### 12.4 Hyperparameter Variants (Member 4)
+
+| Parameter | Baseline | Sweep Range | Configs |
+|-----------|----------|-------------|---------|
+| `ent_coef` | 0.01 | `[0.0, 0.05]` loguniform | `entropy_0.0`, `entropy_0.05` |
+| `batch_size` | 128 | choice(64, 128, 256) | `small_batch`, `large_batch` |
+| `learning_rate` | 2.5e-4 | `[1e-4, 5e-4]` loguniform | `lr_1e-4` |
+| `n_steps` | 2048 | choice(128, 256, 512, 1024) | — |
+| `clip_range` | 0.2 | choice(0.1, 0.15, 0.2, 0.3) | — |
+| `n_epochs` | 4 | choice(3, 4, 8) | — |
+
+### 12.5 Training Strategy Variants (Member 5)
+
+| Variant | What | Risk | Config |
+|---------|------|------|--------|
+| **No curriculum** | Skip Stage 1+2, start in self-play | May never learn basic paddle control | `no_curriculum` |
+| **Longer warmup** | Stage 1: 40%, Stage 2: 30%, Stage 3: 30% | Less self-play time | Code change |
+| **More self-play** | Stage 1: 20%, Stage 2: 20%, Stage 3: 60% | May start self-play before ready | Code change |
+| **Adaptive stages** | Stage 2 ends when win rate vs square > 80% | Complexity, may never trigger | Code change |
+| **Buffer: weighted sampling** | Stronger opponents sampled more | May be too hard for learning | Code change |
+| **Buffer: ELO-based** | Maintain ELO, sample proportionally | Over-engineered for 5-checkpoint pool | Code change |
