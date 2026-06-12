@@ -1,6 +1,7 @@
 {
   "name": "phase3_focused",
   "base_config": "heatmap_obs",
+  "env_kwargs": {"frame_stack": 16},
   "n_trials": 20,
   "steps_per_trial": 20000,
   "envs": 2,

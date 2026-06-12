@@ -1,6 +1,7 @@
 {
   "name": "phase3_default",
   "base_config": "baseline",
+  "env_kwargs": {"frame_stack": 16},
   "n_trials": 30,
   "steps_per_trial": 20000,
   "envs": 2,

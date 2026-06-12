@@ -16,6 +16,8 @@
 
 **⏳ Pending** — waiting for B1 smoke test + repo access
 
+> **⚠️ Curriculum Warning:** `run_experiment.py` (used by `grid_search.py` for sweeps) does NOT use the 3-stage curriculum (no-op → square → self-play). Sweeps train against Unity's default opponent only. Results from sweeps may **not** transfer directly to the final curriculum-based training. Use sweep results to narrow hyperparameter ranges, then validate the best configs in the full curriculum pipeline.
+
 ---
 
 ## Experiment Log

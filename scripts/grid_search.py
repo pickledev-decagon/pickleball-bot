@@ -213,6 +213,11 @@ def main():
         base = resolve_config(base_config_name)
         trial_config = dict(base)
 
+        # Apply env_kwargs overrides from sweep config (e.g. frame_stack)
+        sweep_env_kw = sweep.get("env_kwargs", {})
+        if sweep_env_kw:
+            trial_config.setdefault("env_kwargs", {}).update(sweep_env_kw)
+
         # Sample and apply sweep parameters
         sampled = {}
         for dot_key, spec in sweep.get("params", {}).items():
