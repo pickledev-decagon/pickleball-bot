@@ -23,6 +23,18 @@
 
 ---
 
+## Done Criteria
+
+These criteria apply to every experiment variant you run:
+
+| Criterion | Standard |
+|-----------|----------|
+| **Minimum steps** | 50k steps per variant |
+| **Evaluation sides** | Both left and right, 50 matches each |
+| **Baseline met at** | Win rate > 85% vs the square opponent |
+
+---
+
 ## Variants to Test
 
 - [ ] **Baseline (grayscale, no heatmap)** — plain grayscale frames

@@ -25,6 +25,18 @@
 
 ---
 
+## Done Criteria
+
+These criteria apply to every experiment variant you run:
+
+| Criterion | Standard |
+|-----------|----------|
+| **Minimum steps** | 50k steps per variant |
+| **Evaluation sides** | Both left and right, 50 matches each |
+| **Baseline met at** | Win rate > 85% vs the square opponent |
+
+---
+
 ## Variants to Test
 
 - [ ] **Baseline** — proximity_weight=1.0, hit_bonus=0.5, aggression=0.0, placement=0.0
