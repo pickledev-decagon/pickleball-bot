@@ -57,6 +57,8 @@ def run_experiment(config_name, total_steps=10_000, num_envs=2):
         use_frame_diff=env_kw.get("use_frame_diff", False),
         use_heatmap=env_kw.get("use_heatmap", False),
         reward_config=reward_kw if reward_kw else None,
+        heatmap_sigma=env_kw.get("heatmap_sigma", 5), #NEW
+        heatmap_weight=env_kw.get("heatmap_weight", 0.7) #NEW
     )
 
     policy_kwargs = {
@@ -89,11 +91,16 @@ def run_experiment(config_name, total_steps=10_000, num_envs=2):
         reset_num_timesteps=True,
     )
     elapsed = time.time() - start
-
+#####
+    ckpt_path = os.path.join(results_dir, f"{run_tag}.zip")
+    model.save(ckpt_path)
+    print(f"  checkpoint saved to: {ckpt_path}")
+#####
     vec_env.close()
 
     metrics = {}
-    for key in ["train/entropy_loss", "train/policy_gradient_loss", "train/value_loss", "train/approx_kl"]:
+    for key in ["train/entropy_loss", "train/policy_gradient_loss", "train/value_loss", "train/approx_kl",
+                "train/explained_variance"]: #train/explained_variance added (add EV logging to properly compare configs)
         val = model.logger.name_to_value.get(key, None)
         if val is not None:
             metrics[key] = float(val)
