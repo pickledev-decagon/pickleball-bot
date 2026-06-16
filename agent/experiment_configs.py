@@ -210,7 +210,7 @@ EXPERIMENTS = {
         "description": "Mid size gaussian blob — sigma=6 showed 0.218 at 10k envs4",
         "env_kwargs": {"use_heatmap": True, 
                        "frame_stack": 16, 
-                       "heatap_weight": 0.7,
+                       "heatmap_weight": 0.7,
                        "heatmap_sigma": 6},
         "parent": "baseline",
     },
