@@ -10,8 +10,14 @@ from agent.reward_shaping import HitDetector, shaped_reward
 class EnhancedUnityWrapper(Env):
     def __init__(self, unity_env, frame_stack=16, use_ball_tracking=True,
                  use_rgb=False, use_frame_diff=False, use_heatmap=False,
+                 heatmap_sigma=5, ##NEW
+                 heatmap_weight=0.7, ##NEW
                  reward_config=None, opponent_policy=None, training_progress=0.0,
                  play_as_left=False):
+        
+        self.heatmap_sigma = heatmap_sigma ##NEW
+        self.heatmap_weight = heatmap_weight ##NEW
+
         self.env = unity_env
         self.play_as_left = play_as_left
 
@@ -101,7 +107,18 @@ class EnhancedUnityWrapper(Env):
         gx = int(np.clip(ball_pos[0] * w, 0, w - 1))
         gy = int(np.clip(ball_pos[1] * h, 0, h - 1))
         gaussian = np.zeros((h, w), dtype=np.float32)
-        sigma = max(1, min(h, w) // 16)
+
+        ## Current — auto calculated, results in large sigma
+        #sigma = max(1, min(h, w) // 16)
+        ## With h=84, w=168: min(84,168)//16 = 84//16 = 5
+        ## kernel_size = 6*5+1 = 31 pixels wide — very large on an 84px tall frame
+        
+        # Try this first — much tighter blob
+        #sigma = 2
+        #sigma = 3
+        #sigma = 4
+        sigma = self.heatmap_sigma ##NEW
+
         kernel_size = 6 * sigma + 1
         kx = cv2.getGaussianKernel(kernel_size, sigma)
         ky = cv2.getGaussianKernel(kernel_size, sigma)
@@ -118,7 +135,9 @@ class EnhancedUnityWrapper(Env):
             gaussian[y1:y2, x1:x2], kernel[ky1:ky2, kx1:kx2]
         )
         heatmap = np.expand_dims(gaussian, axis=0)
-        return np.clip(obs_tensor + heatmap * 0.5, 0.0, 1.0)
+        #return np.clip(obs_tensor + heatmap * 0.5, 0.0, 1.0)
+        ## NEW
+        return np.clip(obs_tensor + heatmap * self.heatmap_weight, 0.0, 1.0) # see whether weight can improve or not
 
     def _build_info(self, obs_tensor):
         info = {}

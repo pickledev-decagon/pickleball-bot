@@ -126,8 +126,117 @@ EXPERIMENTS = {
         "parent": "baseline",
     },
 
-}
+    "heatmap_obs_stack16": {
+        "name": "Ball Heatmap + 16-Frame Stack",
+        "description": "Heatmap obs with 16-frame stack — P0 baseline",
+        "env_kwargs": {
+            "use_heatmap": True,
+            "frame_stack": 16,
+        },
+        "parent": "baseline",
+    },
 
+    "heatmap_stack_32": {
+        "name": "Ball Heatmap + 32-Frame Stack",
+        "description": "Heatmap obs with 32-frame stack — P1",
+        "env_kwargs": {
+            "use_heatmap": True,
+            "frame_stack": 32,
+        },"parent": "baseline",
+    },
+
+    "heatmap_stack_24": {
+        "name": "Ball Heatmap + 24-Frame Stack",
+        "description": "Heatmap with 24-frame stack — middle ground between 16 and 32",
+        "env_kwargs": {
+            "use_heatmap": True, 
+            "frame_stack": 24},
+        "parent": "baseline",
+    },
+
+    "heatmap_weight_03": {
+        "name": "Heatmap Weight 0.3",
+        "description": "Subtle heatmap blend — 0.3 weight",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 0.3},
+        "parent": "baseline",
+    },
+
+    "heatmap_weight_07": {
+        "name": "Heatmap Weight 0.7",
+        "description": "Strong heatmap blend — 0.7 weight",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 0.7},
+        "parent": "baseline",
+    },
+
+    "heatmap_weight_10": {
+        "name": "Heatmap Weight 1.0",
+        "description": "Maximum heatmap blend — 1.0 weight",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 1.0},
+        "parent": "baseline",
+    },
+
+    "heatmap_w07_s3": {
+        "name": "Heatmap Tight Blob (weight=0.7, sigma=3, stack=16)",
+        "description": "Tighter blob with best weight — sigma=3 showed 0.238 at 10k envs4",
+        "env_kwargs": {
+            "use_heatmap": True,
+            "frame_stack": 16,
+            "heatmap_weight": 0.7,
+            "heatmap_sigma": 3,
+        },
+        "parent": "baseline",
+    },
+
+    "heatmap_w07_s4": {
+        "name": "Heatmap Mid Blob (weight=0.7, sigma=4, stack=16)",
+        "description": "Between sigma=3 and sigma=5 —  middle ground",
+        "env_kwargs": {
+            "use_heatmap": True,
+            "frame_stack": 16,
+            "heatmap_weight": 0.7,
+            "heatmap_sigma": 4,
+        },
+        "parent": "baseline",
+    },
+
+    "heatmap_w07_s6": {
+        "name": "Heatmap Mid Blob (weight=0.7, sigma=6, stack=16)",
+        "description": "Mid size gaussian blob — sigma=6 showed 0.218 at 10k envs4",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 0.7,
+                       "heatmap_sigma": 6},
+        "parent": "baseline",
+    },
+
+    "heatmap_w07_s9": {
+        "name": "Heatmap Large Blob 9 (weight=0.7, sigma=9, stack=16)",
+        "description": "Very large gaussian blob — sigma=9 showed 0.117 at 10k envs4",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 0.7,
+                       "heatmap_sigma": 9},
+        "parent": "baseline",
+    },
+
+    "heatmap_w07_s5": {
+        "name": "Heatmap Best (weight=0.7, sigma=5, stack_16)",
+        "description": "best confirmed combo from sweeps - w-0.7, s=5",
+        "env_kwargs": {"use_heatmap": True, 
+                       "frame_stack": 16, 
+                       "heatmap_weight": 0.7,
+                       "heatmap_sigma": 5},
+        "parent": "baseline",
+    },
+
+    
+}
 
 def resolve_config(name):
     if name not in EXPERIMENTS:
