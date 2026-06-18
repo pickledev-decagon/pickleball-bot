@@ -136,6 +136,7 @@ EXPERIMENTS = {
         "parent": "baseline",
     },
 
+################# HEATMAP #################
     "heatmap_stack_32": {
         "name": "Ball Heatmap + 32-Frame Stack",
         "description": "Heatmap obs with 32-frame stack — P1",
@@ -232,6 +233,107 @@ EXPERIMENTS = {
                        "frame_stack": 16, 
                        "heatmap_weight": 0.7,
                        "heatmap_sigma": 5},
+        "parent": "baseline",
+    },
+
+################### REWARD SHAPING ###############################
+    ## NEW CREATE
+    ## Hit Bonus
+    "hit_bonus_075": {
+        "name": "Hit Bonus 0.75",
+        "description": "+0.75 per paddle contact — moderate hit reward between baseline 0.5 and high 1.0",
+        "reward_kwargs": {"hit_bonus": 0.75},
+        "parent": "baseline",
+    },
+
+    "hit_bonus_09": {
+        "name": "Hit Bonus 0.9",
+        "description": "+0.9 per paddle contact — slightly lower than the best current hit reward 1.0",
+        "reward_kwargs": {"hit_bonus": 0.9},
+        "parent": "baseline",
+    },
+
+    "hit_bonus_11": {
+        "name": "Hit Bonus 1.1",
+        "description": "+1.1 per paddle contact — slightly higher than the best current hit reward 1.0",
+        "reward_kwargs": {"hit_bonus": 1.1},
+        "parent": "baseline",
+    },
+
+    "hit_bonus_125": {
+        "name": "Hit Bonus 1.25",
+        "description": "+1.25 per paddle contact — stronger hit reward than high 1.0",
+        "reward_kwargs": {"hit_bonus": 1.25},
+        "parent": "baseline",
+    },
+
+    ## Aggression Bonus
+    "aggression_bonus_001": {
+        "name": "Aggression Bonus 0.01",
+        "description": "+0.01 per frame ball is on opponent side — very mild attacking reward",
+        "reward_kwargs": {"aggression_bonus": 0.01},
+        "parent": "baseline",
+    },
+
+    "aggression_bonus_0015": {
+    "name": "Aggression Bonus 0.015",
+    "description": "+0.015 per frame ball is on opponent side — between 0.01 and 0.02 aggression reward",
+    "reward_kwargs": {"aggression_bonus": 0.015},
+    "parent": "baseline",
+    },
+
+    "aggression_bonus_002": {
+        "name": "Aggression Bonus 0.02",
+        "description": "+0.02 per frame ball is on opponent side — very mild attacking reward",
+        "reward_kwargs": {"aggression_bonus": 0.02},
+        "parent": "baseline",
+    },
+
+    "aggression_bonus_005": {
+    "name": "Aggression Bonus 0.05",
+    "description": "+0.05 per frame ball is on opponent side — milder attacking reward",
+    "reward_kwargs": {"aggression_bonus": 0.05},
+    "parent": "baseline",
+    },
+
+    ## Placement Bonus
+    "placement_bonus_0025": {
+        "name": "Placement Bonus 0.025",
+        "description": "+0.025 for landing ball in corner/far-back zones — very small shot quality reward",
+        "reward_kwargs": {"placement_bonus": 0.025},
+        "parent": "baseline",
+    },
+
+    "placement_bonus_005": {
+        "name": "Placement Bonus 0.05",
+        "description": "+0.05 for landing ball in corner/far-back zones — very mild shot quality reward",
+        "reward_kwargs": {"placement_bonus": 0.05},
+        "parent": "baseline",
+    },
+
+    "placement_bonus_010": {
+        "name": "Placement Bonus 0.10",
+        "description": "+0.10 for landing ball in corner/far-back zones — mild shot quality reward",
+        "reward_kwargs": {"placement_bonus": 0.10},
+        "parent": "baseline",
+    },
+
+    "placement_bonus_020": {
+        "name": "Placement Bonus 0.20",
+        "description": "+0.20 for landing ball in corner/far-back zones — moderate shot quality reward",
+        "reward_kwargs": {"placement_bonus": 0.20},
+        "parent": "baseline",
+    },
+
+    ## COMBINATION
+    "hit_aggression_placement_combo": {
+        "name": "Hit + Aggression + Placement Combo",
+        "description": "Combines +1.0 hit bonus, +0.01 aggression bonus, and +0.025 placement bonus",
+        "reward_kwargs": {
+            "hit_bonus": 1.0,
+            "aggression_bonus": 0.01,
+            "placement_bonus": 0.025,
+        },
         "parent": "baseline",
     },
 
