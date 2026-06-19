@@ -1,0 +1,13 @@
+{
+  "experiment": "rgb_obs",
+  "description": "3-channel RGB input instead of grayscale \u2014 more color info, 3x channels",
+  "timestamp": "20260517_000145",
+  "total_steps": 10000,
+  "num_envs": 2,
+  "elapsed_seconds": 347.7,
+  "steps_per_second": 28.8,
+  "train/entropy_loss": -3.281510479748249,
+  "train/policy_gradient_loss": -0.001597432819835376,
+  "train/value_loss": 0.02960402788448846,
+  "train/approx_kl": 0.007831897586584091
+}

@@ -1,0 +1,13 @@
+{
+  "experiment": "stack_2",
+  "description": "Only 2 stacked frames \u2014 faster inference, less temporal info",
+  "timestamp": "20260517_001832",
+  "total_steps": 10000,
+  "num_envs": 2,
+  "elapsed_seconds": 284.8,
+  "steps_per_second": 35.1,
+  "train/entropy_loss": -3.2757371328771114,
+  "train/policy_gradient_loss": -0.0031910856341710314,
+  "train/value_loss": 0.033813578251283616,
+  "train/approx_kl": 0.009115021675825119
+}

@@ -1,0 +1,11 @@
+{
+  "experiment": "baseline",
+  "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+  "timestamp": "20260516_235640",
+  "total_steps": 10000,
+  "num_envs": 2,
+  "elapsed_seconds": 259.6,
+  "steps_per_second": 38.5,
+  "train/value_loss": 0.029408431029878557,
+  "train/approx_kl": 7.302660378627479e-05
+}

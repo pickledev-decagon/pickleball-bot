@@ -1,0 +1,13 @@
+{
+  "experiment": "heatmap_obs",
+  "description": "Ball position (x,y) overlaid as Gaussian peaks on stacked grayscale",
+  "timestamp": "20260612_014056",
+  "total_steps": 10000,
+  "num_envs": 2,
+  "elapsed_seconds": 319.4,
+  "steps_per_second": 31.3,
+  "train/entropy_loss": -3.281003400683403,
+  "train/policy_gradient_loss": -0.002876240800105734,
+  "train/value_loss": 0.030693608277942985,
+  "train/approx_kl": 0.003605308011174202
+}

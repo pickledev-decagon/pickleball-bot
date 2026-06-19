@@ -1,0 +1,13 @@
+{
+  "experiment": "frame_diff",
+  "description": "Stack frame-to-frame differences instead of raw frames \u2014 motion pops out",
+  "timestamp": "20260517_000757",
+  "total_steps": 10000,
+  "num_envs": 2,
+  "elapsed_seconds": 277.7,
+  "steps_per_second": 36.0,
+  "train/entropy_loss": -3.295721098780632,
+  "train/policy_gradient_loss": -0.0001268116211576853,
+  "train/value_loss": 0.03383526360266842,
+  "train/approx_kl": 1.2372183846309781e-05
+}
