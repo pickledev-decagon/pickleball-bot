@@ -165,6 +165,12 @@ class EnhancedUnityWrapper(Env):
 
         info = self._build_info(raw_obs)
 
+        # Mirror ball_pos x-coordinate when playing left side so it matches
+        # the already-flipped observation coordinate space.
+        if self.play_as_left and "ball_pos" in info:
+            bx, by = info["ball_pos"]
+            info["ball_pos"] = (1.0 - bx, by) if bx >= 0 else (bx, by)
+
         if self.use_heatmap:
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
             obs = self._render_heatmap(obs, ball_pos)
@@ -201,6 +207,12 @@ class EnhancedUnityWrapper(Env):
             obs = self._preprocess(raw_obs)
 
         info = self._build_info(raw_obs)
+
+        # Mirror ball_pos x-coordinate when playing left side so it matches
+        # the already-flipped observation coordinate space.
+        if self.play_as_left and "ball_pos" in info:
+            bx, by = info["ball_pos"]
+            info["ball_pos"] = (1.0 - bx, by) if bx >= 0 else (bx, by)
 
         if self.use_heatmap:
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
