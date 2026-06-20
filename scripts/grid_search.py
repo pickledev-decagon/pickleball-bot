@@ -17,9 +17,31 @@ import math
 import random
 import time
 import argparse
+import csv
+import subprocess
+import signal
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def kill_unity():
+    """Kill any lingering Unity process to free the communication port."""
+    subprocess.run(
+        ["pkill", "-9", "-f", "Mac.app/Contents/MacOS/dp"],
+        capture_output=True, timeout=10
+    )
+    try:
+        res = subprocess.run(
+            ["lsof", "-ti:5005-5012"], capture_output=True, text=True, timeout=5
+        )
+        for pid in res.stdout.strip().split("\n"):
+            if pid.strip():
+                os.kill(int(pid.strip()), signal.SIGKILL)
+    except Exception:
+        pass
+    time.sleep(2)
+
 
 from config import BUILD_PATH
 from stable_baselines3 import PPO
@@ -207,6 +229,9 @@ def main():
     print(f"  Output dir:    {output_dir}")
     print(f"  Params:        {list(sweep.get('params', {}).keys())}")
 
+    # Kill any stale Unity before starting trials
+    kill_unity()
+
     results = []
     for i in range(n_trials):
         print(f"\n--- Trial {i + 1}/{n_trials} ---")
@@ -247,6 +272,9 @@ def main():
                 "sampled_params": sampled,
                 "config": trial_config,
             })
+        finally:
+            # Kill Unity to free socket for next trial
+            kill_unity()
 
     collate_results(output_dir, results)
     print(f"\nSummary: {os.path.join(output_dir, 'summary.json')}")
