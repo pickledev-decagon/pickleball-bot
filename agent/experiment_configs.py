@@ -325,13 +325,49 @@ EXPERIMENTS = {
         "parent": "baseline",
     },
 
-    ## COMBINATION
+    ## COMBINATION Reward
     "hit_aggression_placement_combo": {
         "name": "Hit + Aggression + Placement Combo",
         "description": "Combines +1.0 hit bonus, +0.01 aggression bonus, and +0.025 placement bonus",
         "reward_kwargs": {
             "hit_bonus": 1.0,
             "aggression_bonus": 0.01,
+            "placement_bonus": 0.025,
+        },
+        "parent": "baseline",
+    },
+
+    ## COMBINE Reward + Observation
+    "hit_aggression_placement_combo_heatmap": {
+        "name": "Hit + Aggression + Placement Combo + Heatmap Stack16",
+        "description": "Selected reward combo using Siao Xuan's updated heatmap observation setup",
+        "env_kwargs": {
+            "use_rgb": False,
+            "use_frame_diff": False,
+            "use_heatmap": True,
+            "frame_stack": 16,
+        },
+        "reward_kwargs": {
+            "hit_bonus": 1.0,
+            "aggression_bonus": 0.01,
+            "placement_bonus": 0.025,
+        },
+        "parent": "baseline",
+    },
+
+    # HIT + PLACEMENT + HEATMAP
+    "hit_placement_heatmap": {
+        "name": "Hit + Placement Heatmap",
+        "description": "Reward shaping variant using hit and placement rewards with heatmap observation, without aggression bonus",
+        "env_kwargs": {
+            "use_rgb": False,
+            "use_frame_diff": False,
+            "use_heatmap": True,
+            "frame_stack": 16,
+        },
+        "reward_kwargs": {
+            "hit_bonus": 1.0,
+            "aggression_bonus": 0.0,
             "placement_bonus": 0.025,
         },
         "parent": "baseline",

@@ -38,6 +38,7 @@
 | 15 | 2026-06-14 | hit_bonus_09 | 10,000 | N/A | N/A | N/A | N/A | Preliminary 10k trial. Result file: `results/hit_bonus_09_20260614_001851.json`. Steps/sec=44.9, entropy=-3.274, approx_kl=0.00228, value_loss=0.0676. Stable PPO update, but value loss is higher than hit_bonus_high=1.0, so 0.9 is not clearly better. |
 | 16 | 2026-06-14 | hit_bonus_11 | 10,000 | N/A | N/A | N/A | N/A | Preliminary 10k trial. Result file: `results/hit_bonus_11_20260614_002445.json`. Steps/sec=44.7, entropy=-3.294, approx_kl=0.00559, value_loss=0.0629. Stable PPO update, but both KL and value loss are higher than hit_bonus_high=1.0, so 1.1 is not better than 1.0. |
 | 17 | 2026-06-14 | hit_aggression_placement_combo | 10,000 | N/A | N/A | N/A | N/A | Preliminary 10k combination trial using current baseline observation. Result file: `results/hit_aggression_placement_combo_20260614_003733.json`. Combines hit_bonus=1.0, aggression_bonus=0.01, and placement_bonus=0.025. Steps/sec=44.3, entropy=-3.281, approx_kl=0.00274, value_loss=0.0657. Stable PPO update, but value loss is higher than the best individual reward settings. Final combo should be rerun after the observation setup is confirmed. |
+| 18 | 2026-06-19 | hit_bonus_high | 10,000 | N/A | N/A | N/A | N/A | Re-tested using Siao Xuan’s updated observation setup. Result file: `results/hit_bonus_high_20260619_001402.json`. Steps/sec=39.7, entropy=-3.290, approx_kl=0.00218, value_loss=0.0793, explained_variance=0.00818. PPO update is stable because KL remains below 0.01, but value loss is higher than the previous old-observation hit_bonus_high trial. |
 
 ---
 ## Reward Trial Comparison
@@ -95,7 +96,98 @@ The `placement_bonus` run was still stable because `approx_kl` stayed below `0.0
 | hit_aggression_placement_combo | 1.00 | 0.01 | 0.025 | 10,000 | 4 | 44.3 | -3.281 | 0.00274 | 0.0657 | Stable | Combines the best hit, aggression, and placement values | Preliminary only; rerun after final observation setup |
 
 ---
+## Reward Result (merged with updated observation setup)
+*previously optimized reward parameters validated under updated observation setup
 
+### Hit Bonus:
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_bonus_high | Old/default observation | 10,000 | 4 | 42.1 | -3.294 | 0.00316 | 0.0459 | N/A | Stable | Best hit-bonus setting from earlier sensitivity test |
+| hit_bonus_high | Updated observation | 10,000 | 4 | 39.7 | -3.290 | 0.00218 | 0.0793 | 0.00818 | Stable | Still stable after observation update, but critic loss increased |
+
+### Aggression Bonus:
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| aggression_bonus_001 | Old/default observation | 10,000 | 4 | 45.3 | -3.295 | 0.00045 | 0.0366 | N/A | Very stable | Best aggression-bonus setting from earlier sensitivity test |
+| aggression_bonus_001 | Updated observation | 10,000 | 4 | 34.2 | -3.293 | 0.00127 | 0.0385 | -0.000079 | Very stable | Still stable after observation update; value loss remains close to the old-observation result, but training speed decreased |
+
+### Placement Bonus:
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| placement_bonus_0025 | Old/default observation | 10,000 | 4 | 44.2 | -3.295 | 0.000086 | 0.0285 | N/A | Very stable | Best placement-bonus setting from earlier sensitivity test |
+| placement_bonus_0025 | Updated observation | 10,000 | 4 | 36.5 | -3.295 | 0.00175 | 0.0512 | 0.00617 | Stable | Still stable after observation update, but value loss increased and training speed decreased |
+
+### Combine Reward:
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_aggression_placement_combo | Old/default observation | 10,000 | 4 | 44.3 | -3.281 | 0.00274 | 0.0657 | N/A | Stable | Preliminary combo using the best individual reward parameters from earlier sensitivity tests |
+| hit_aggression_placement_combo | Updated observation | 10,000 | 4 | 35.8 | -3.292 | 0.00086 | 0.0486 | 0.00057 | Very stable | Combo remains stable after observation update; approx KL and value loss are both lower than the old-observation combo result, but training speed decreased |
+
+The combined reward configuration remains stable after integrating Siao Xuan’s updated observation setup. Compared with the old/default observation combo result, the updated-observation combo recorded lower approx KL and lower value loss, suggesting a more stable PPO update and critic learning process. However, the training speed decreased from 44.3 steps/sec to 35.8 steps/sec. Overall, the updated-observation combo can still be considered a suitable final candidate for longer training.
+
+Based on the reward sensitivity experiments, the selected reward configuration is `hit_aggression_placement_combo`, which combines `hit_bonus=1.0`, `aggression_bonus=0.01`, and `placement_bonus=0.025`. These values were first selected from the individual reward-parameter tests under the default observation setup. After rebasing with the updated observation setup, the selected values were re-tested individually and then combined. The final combined configuration remained stable, with low approximate KL divergence and moderate value loss. Therefore, this configuration is selected as the final reward-shaping candidate for longer training.
+
+### Final Handoff-Aligned Reward Combo Training Result
+
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_aggression_placement_combo | Baseline observation | 50,000 | 8 | 39.4 | -3.197 | 0.00423 | 0.0522 | 0.16569 | Stable | Reward combo trained with baseline observation; useful as comparison but not final handoff-aligned setup |
+| hit_aggression_placement_combo_heatmap | Heatmap + 16-frame stack | 50,000 | 8 | 37.1 | -3.216 | 0.00701 | 0.0389 | 0.76272 | Stable | Final reward combo using Siao Xuan’s updated observation setup; value loss decreased and explained variance improved strongly |
+
+
+
+### Longer Training Result: Selected Reward Combo
+
+| Config | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_aggression_placement_combo | 10,000 | 4 | 35.8 | -3.292 | 0.00086 | 0.0486 | 0.00057 | Very stable | Preliminary updated-observation combo test |
+| hit_aggression_placement_combo | 50,000 | 8 | 39.4 | -3.197 | 0.00423 | 0.0522 | 0.16569 | Stable | Longer training remains stable; explained variance improves, suggesting the critic starts learning the value function better |
+
+The selected combined reward setting was trained for 50,000 steps using 8 parallel environments. The result remained stable, with `approx_kl=0.00423`, which is still below 0.01. Compared with the 10,000-step run, the value loss remained similar, while explained variance improved from approximately 0.00057 to 0.16569. This suggests that longer training helps the critic estimate the value function more effectively. Therefore, the selected reward setting is suitable for further longer training or final evaluation.
+
+---
+
+### Final Handoff-Aligned Reward Combo Training Result
+
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_aggression_placement_combo | Baseline observation | 50,000 | 8 | 39.4 | -3.197 | 0.00423 | 0.0522 | 0.16569 | Stable | Reward combo trained with baseline observation; useful as comparison but not final handoff-aligned setup |
+| hit_aggression_placement_combo_heatmap | Heatmap + 16-frame stack | 50,000 | 8 | 37.1 | -3.216 | 0.00701 | 0.0389 | 0.76272 | Stable | Final reward combo using Siao Xuan’s updated observation setup; value loss decreased and explained variance improved strongly |
+| hit_placement_heatmap | Heatmap + 16-frame stack | 50,000 | 8 | 36.0 | -3.255 | 0.0056 | 0.0471 | 0.4742 | Stable | Revised final reward-shaping candidate without aggression bonus. The model remained stable during 50k training, and the removal of aggression produced more controlled paddle movement during visual inspection. |
+| hit_placement_heatmap | Heatmap + 16-frame stack | 100,000 | 8 | 40.5 | -3.098 | 0.0129 | 0.0532 | 0.4819 | Slightly unstable | Extended diagnostic training requested after the previous 0% evaluation. Explained variance remains similar to the 50k run, but approx KL increased above 0.01, suggesting PPO updates became less stable. This model should be evaluated visually and against square opponent before deciding whether it improves gameplay. |
+
+The 100k extended training did not show clear improvement over the 50k model. Although explained variance increased slightly, the approximate KL rose above 0.01 and value loss also increased. This suggests that longer training did not clearly improve stability, and the 50k `hit_placement_heatmap` checkpoint remains the safer final reward-shaping candidate unless evaluation results show otherwise.
+
+The final handoff-aligned reward configuration was trained using Siao Xuan’s heatmap observation setup with 16-frame stacking. Compared with the baseline-observation reward combo, the heatmap reward combo achieved a lower value loss and a much higher explained variance. Although the approximate KL increased to 0.00701, it remains below 0.01, indicating that PPO updates are still stable. Therefore, `hit_aggression_placement_combo_heatmap` is selected as the final reward-shaping candidate for evaluation and handoff.
+
+### Debug Training Result: Hit + Placement Heatmap
+
+| Config | Observation Version | Steps | Envs | Steps/sec | Entropy | Approx KL | Value Loss | Explained Variance | Stability | Interpretation |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| hit_placement_heatmap | Heatmap + 16-frame stack | 10,000 | 4 | 40.1 | -3.285 | 0.0050 | 0.0476 | 0.2049 | Stable | Revised reward variant without aggression bonus. Visual inspection showed more controlled paddle movement, better ball aiming, and fewer out-of-court hits compared with the previous aggression-based combo. |
+
+
+---
+## Evaluation 
+
+##### N_MATCHES = 5
+vs no_op  : 0 wins out of 5
+vs random : 0 wins out of 5
+vs square : 0 wins out of 5
+
+### Evaluation Result: 50k Heatmap Reward Combo
+
+| Config | Side | Opponent | Matches | Wins | Losses | Draws | Win Rate | Avg Point Diff | Notes |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| hit_aggression_placement_combo_heatmap | Right | no_op | 5 | 0 | 5 | 0 | 0.0% | N/A | Quick diagnostic evaluation |
+| hit_aggression_placement_combo_heatmap | Right | random | 5 | 0 | 5 | 0 | 0.0% | N/A | Quick diagnostic evaluation |
+| hit_aggression_placement_combo_heatmap | Right | square | 5 | 0 | 5 | 0 | 0.0% | N/A | Quick diagnostic evaluation |
+| hit_aggression_placement_combo_heatmap | Right | square | 50 | 0 | 48 | 2 | 0.0% | -3.58 | Final evaluation; model did not meet the 85% square-opponent target |
+| hit_placement_heatmap(50k) | Right | square | 5 | 1 | 3 | 1 | 20.0% | -2.2 | Quick evaluation. The no-aggression model improved compared with the previous aggression-based model, but visual inspection showed repeated paddle movement patterns and inconsistent ball tracking. |
+| hit_placement_heatmap(100k) | Right | square | 5 | 5 | 0 | 0 | 100.0% | 18.6 | Quick evaluation for 100k checkpoint. The model achieved perfect win rate, but visual inspection showed a repeated opening-shot pattern and weaker response when the opponent started the rally. |
+| hit_placement_heatmap(100k) | Right | square | 50 | 50 | 0 | 0 | 100.0% | 18.22 | Final right-side evaluation for 100k checkpoint. The model exceeded the 85% target, although visual inspection suggested a repeated opening-shot strategy rather than fully robust rally response. |
+
+---
 
 ## Done Criteria
 

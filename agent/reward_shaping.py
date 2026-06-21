@@ -90,6 +90,17 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
                   proximity_weight=1.0, placement_bonus=0.0):
     dense_weight = annealing_weight(training_progress, end_phase=0.6)
     reward = sparse_reward
+
+    # Debug: print ball position every 100 steps
+    # if step % 100 == 0:
+    #     print(
+    #         f"[reward-debug] step={step}, "
+    #         f"ball_pos={ball_pos}, "
+    #         f"sparse_reward={sparse_reward}, "
+    #         f"dense_weight={dense_weight:.3f}, "
+    #         f"progress={training_progress:.3f}"
+    #     )
+
     if dense_weight > 0:
         reward += dense_weight * proximity_weight * dense_distance_reward(ball_pos, paddle_x, paddle_y)
         if hit_detector is not None and hit_detector.update(ball_pos, step):
@@ -97,8 +108,11 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
         if placement_bonus > 0:
             # Simple heuristic: if ball is on opponent side and we got positive reward,
             # we likely just hit it. Reward placement quality.
-            last_hitter_was_me = (sparse_reward > 0 or ball_pos[0] > 0.5)
+            #last_hitter_was_me = (sparse_reward > 0 or ball_pos[1] > 0.5)
+            last_hitter_was_me = (sparse_reward > 0)
             reward += dense_weight * placement_bonus * placement_reward(ball_pos, last_hitter_was_me)
-    if aggression_bonus > 0 and ball_pos[0] > 0.5:
+    if aggression_bonus > 0 and ball_pos[1] > 0.5:
         reward += aggression_bonus
+
+    
     return reward
