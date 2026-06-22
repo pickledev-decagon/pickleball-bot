@@ -186,7 +186,8 @@ vs square : 0 wins out of 5
 | hit_placement_heatmap(50k) | Right | square | 5 | 1 | 3 | 1 | 20.0% | -2.2 | Quick evaluation. The no-aggression model improved compared with the previous aggression-based model, but visual inspection showed repeated paddle movement patterns and inconsistent ball tracking. |
 | hit_placement_heatmap(100k) | Right | square | 5 | 5 | 0 | 0 | 100.0% | 18.6 | Quick evaluation for 100k checkpoint. The model achieved perfect win rate, but visual inspection showed a repeated opening-shot pattern and weaker response when the opponent started the rally. |
 | hit_placement_heatmap(100k) | Right | square | 50 | 50 | 0 | 0 | 100.0% | 18.22 | Final right-side evaluation for 100k checkpoint. The model exceeded the 85% target, although visual inspection suggested a repeated opening-shot strategy rather than fully robust rally response. |
-
+| hit_placement_heatmap(10k) | Left | square | 5 | 3 | 1 | 1 | 60.0% | 1.2 | Quick diagnostic after applying the left-side ball-position mirroring fix and retraining for 10k steps. The model showed improved left-side behaviour compared with the previous default-position rotation issue, but longer training is required for final evaluation. |
+| hit_placement_heatmap (100k) | Left | square | 50 | 50 | 0 | 0 | 100.0% | 13.1 | Final left-side evaluation after retraining the 100k checkpoint with the fixed left-side ball-position mirroring wrapper. The model exceeded the 85% target against the square opponent. |
 ---
 
 ## Done Criteria
