@@ -27,8 +27,7 @@ class EnhancedUnityWrapper(Env):
         else:
             self.agent = self.env.possible_agents[1]
             self.agent_other = self.env.possible_agents[0]
-        # Shared observation is always from agent 0 (per official example)
-        self.agent_obs = self.env.possible_agents[0]
+        self.agent_obs = self.agent  # each agent reads its own camera
 
         self.frame_stack = frame_stack
         self.use_rgb = use_rgb

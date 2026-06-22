@@ -10,7 +10,7 @@ def annealing_weight(progress, start_phase=0.0, end_phase=0.6):
     return 1.0 - (progress - start_phase) / (end_phase - start_phase)
 
 
-def dense_distance_reward(ball_pos, paddle_x=0.35, paddle_y=None):
+def dense_distance_reward(ball_pos, paddle_x=0.65, paddle_y=None):
     if ball_pos[0] < 0:
         return 0.0
     # If actual paddle y-position is unknown, use ball's y as an estimate.
