@@ -28,7 +28,23 @@ class EnhancedUnityWrapper(Env):
         else:
             self.agent = self.env.possible_agents[1]
             self.agent_other = self.env.possible_agents[0]
-        self.agent_obs = self.agent  # each agent reads its own camera
+
+        # Determine which agent provides the camera observation.
+        # If the acting agent has a visual (≥2D) observation, use it per-agent.
+        # Otherwise fall back to the other agent's camera (current build only
+        # gives PAgent1 a camera; PAgent2 only has a vector observation).
+        _obs_spaces = self.env.observation_spaces
+        def _has_visual(aid):
+            sp = _obs_spaces[aid]
+            if isinstance(sp, spaces.Tuple):
+                return any(len(s.shape) > 1 for s in sp.spaces)
+            return len(sp.shape) > 1
+        if _has_visual(self.agent):
+            self.agent_obs = self.agent
+        elif _has_visual(self.agent_other):
+            self.agent_obs = self.agent_other
+        else:
+            self.agent_obs = self.agent  # will fail later — no camera at all
 
         self.frame_stack = frame_stack
         self.use_rgb = use_rgb
@@ -37,7 +53,10 @@ class EnhancedUnityWrapper(Env):
         self.opponent_policy = opponent_policy
         self.training_progress = float(training_progress)
 
-        base_obs = self.env.observation_spaces[self.agent_obs][0]
+        # Unwrap observation space: mlagents stores a single Box directly but a
+        # list of observations as a Tuple. Always extract the first subspace.
+        obs_space = self.env.observation_spaces[self.agent_obs]
+        base_obs = obs_space[0] if isinstance(obs_space, spaces.Tuple) else obs_space
         c, h, w = base_obs.shape
         self._needs_transpose = (c == 3)
 
