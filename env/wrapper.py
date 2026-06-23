@@ -36,9 +36,12 @@ class EnhancedUnityWrapper(Env):
         _obs_spaces = self.env.observation_spaces
         def _has_visual(aid):
             sp = _obs_spaces[aid]
-            if isinstance(sp, spaces.Tuple):
-                return any(len(s.shape) > 1 for s in sp.spaces)
-            return len(sp.shape) > 1
+            # Tuple observation space, e.g. Tuple(Box(3,84,168), Box(1,))
+            if hasattr(sp, "spaces"):
+                return any(len(getattr(s, "shape", ())) == 3 for s in sp.spaces)
+            # Direct Box observation space, e.g. Box(1,) or Box(3,84,168)
+            shape = getattr(sp, "shape", ())
+            return len(shape) == 3
         if _has_visual(self.agent):
             self.agent_obs = self.agent
         elif _has_visual(self.agent_other):
