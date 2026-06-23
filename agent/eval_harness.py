@@ -61,63 +61,64 @@ class MatchEvaluator:
         except Exception:
             pass
 
-        for match_i in range(n_matches):
-            env = env_fn()
-            # Inject opponent policy
-            if opponent_type == "no_op":
-                env.opponent_policy = lambda obs: np.array([1, 1, 1], dtype=np.int32)
-            elif opponent_type == "random":
-                env.opponent_policy = lambda obs: env.action_space.sample()
-            elif opponent_type == "square":
-                step_counter = [0]
-                env.opponent_policy = lambda obs: self._square_motion(step_counter)
-            elif opponent_type == "self":
-                # Clone model behavior for opponent
-                env.opponent_policy = lambda obs: self._self_play_policy(obs, deterministic)
-            else:
-                raise ValueError(f"Unknown opponent_type: {opponent_type}")
+        # Create ONE environment and reuse it across matches via reset()
+        env = env_fn()
+        try:
+            for match_i in range(n_matches):
+                # Inject opponent policy
+                if opponent_type == "no_op":
+                    env.opponent_policy = lambda obs: np.array([1, 1, 1], dtype=np.int32)
+                elif opponent_type == "random":
+                    env.opponent_policy = lambda obs: env.action_space.sample()
+                elif opponent_type == "square":
+                    seq_step = [0]
+                    env.opponent_policy = lambda obs: self._square_motion(seq_step)
+                elif opponent_type == "self":
+                    env.opponent_policy = lambda obs: self._self_play_policy(obs, deterministic)
+                else:
+                    raise ValueError(f"Unknown opponent_type: {opponent_type}")
 
-            obs, info = env.reset()
-            my_score = 0
-            opp_score = 0
-            match_steps = 0
+                obs, info = env.reset()
+                my_score = 0
+                opp_score = 0
+                match_steps = 0
 
-            while match_steps < self.max_steps_per_match:
-                action, _ = self.model.predict(obs, deterministic=deterministic)
-                # Ensure valid discrete action
-                action = np.clip(action.astype(np.int32), 0, 2)
+                while match_steps < self.max_steps_per_match:
+                    action, _ = self.model.predict(obs, deterministic=deterministic)
+                    # Ensure valid discrete action
+                    action = np.clip(action.astype(np.int32), 0, 2)
 
-                obs, reward, done, truncated, info = env.step(action)
-                match_steps += 1
+                    obs, reward, done, truncated, info = env.step(action)
+                    match_steps += 1
 
-                # Extract score from info dict if available, else infer from reward
-                my_score = info.get("my_score", my_score)
-                opp_score = info.get("opp_score", opp_score)
+                    # Extract score from info dict if available, else infer from reward
+                    my_score = info.get("my_score", my_score)
+                    opp_score = info.get("opp_score", opp_score)
 
-                # Fallback: infer from sparse reward spikes (point won/lost)
-                if reward > 0.8:
-                    my_score += 1
-                elif reward < -0.8:
-                    opp_score += 1
+                    # Fallback: infer from sparse reward spikes (point won/lost)
+                    if reward > 0.8:
+                        my_score += 1
+                    elif reward < -0.8:
+                        opp_score += 1
 
-                if done or truncated:
-                    break
+                    if done or truncated:
+                        break
 
-                # Early termination if someone reaches 21
-                if my_score >= 21 or opp_score >= 21:
-                    break
+                    # Early termination if someone reaches 21
+                    if my_score >= 21 or opp_score >= 21:
+                        break
 
+                if my_score > opp_score:
+                    results["wins"] += 1
+                elif my_score < opp_score:
+                    results["losses"] += 1
+                else:
+                    results["draws"] += 1
+
+                total_steps += match_steps
+                total_point_diff += (my_score - opp_score)
+        finally:
             env.close()
-
-            if my_score > opp_score:
-                results["wins"] += 1
-            elif my_score < opp_score:
-                results["losses"] += 1
-            else:
-                results["draws"] += 1
-
-            total_steps += match_steps
-            total_point_diff += (my_score - opp_score)
 
         n_matches = float(n_matches)
         win_rate = results["wins"] / n_matches if n_matches > 0 else 0.0
