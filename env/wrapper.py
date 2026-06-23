@@ -34,20 +34,34 @@ class EnhancedUnityWrapper(Env):
         # Otherwise fall back to the other agent's camera (current build only
         # gives PAgent1 a camera; PAgent2 only has a vector observation).
         _obs_spaces = self.env.observation_spaces
-        def _has_visual(aid):
-            sp = _obs_spaces[aid]
+
+        def _visual_space(sp):
+            """Extract the 3D image Box from a space (Tuple or Box)."""
             # Tuple observation space, e.g. Tuple(Box(3,84,168), Box(1,))
             if hasattr(sp, "spaces"):
-                return any(len(getattr(s, "shape", ())) == 3 for s in sp.spaces)
-            # Direct Box observation space, e.g. Box(1,) or Box(3,84,168)
+                for sub_sp in sp.spaces:
+                    shape = getattr(sub_sp, "shape", ())
+                    if len(shape) == 3:
+                        return sub_sp
+                return None
+
+            # Direct Box observation space, e.g. Box(3,84,168) or Box(1,)
             shape = getattr(sp, "shape", ())
-            return len(shape) == 3
+            if len(shape) == 3:
+                return sp
+            return None
+
+        def _has_visual(aid):
+            return _visual_space(_obs_spaces[aid]) is not None
+
         if _has_visual(self.agent):
             self.agent_obs = self.agent
         elif _has_visual(self.agent_other):
             self.agent_obs = self.agent_other
         else:
-            self.agent_obs = self.agent  # will fail later — no camera at all
+            raise ValueError(
+                "No visual observation space found for either agent."
+            )
 
         self.frame_stack = frame_stack
         self.use_rgb = use_rgb
@@ -56,10 +70,11 @@ class EnhancedUnityWrapper(Env):
         self.opponent_policy = opponent_policy
         self.training_progress = float(training_progress)
 
-        # Unwrap observation space: mlagents stores a single Box directly but a
-        # list of observations as a Tuple. Always extract the first subspace.
-        obs_space = self.env.observation_spaces[self.agent_obs]
-        base_obs = obs_space[0] if isinstance(obs_space, spaces.Tuple) else obs_space
+        base_obs = _visual_space(_obs_spaces[self.agent_obs])
+        if base_obs is None:
+            raise ValueError(
+                "Selected observation source has no visual observation space."
+            )
         c, h, w = base_obs.shape
         self._needs_transpose = (c == 3)
 
