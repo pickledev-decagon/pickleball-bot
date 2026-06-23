@@ -5,6 +5,7 @@ from gymnasium import Env, spaces
 from mlagents_envs.envs.unity_parallel_env import UnityParallelEnv
 from env.preprocessing import BallTracker, SmoothBallTracker
 from agent.reward_shaping import HitDetector, shaped_reward
+from config import OBSERVATION_CONFIG
 
 
 class EnhancedUnityWrapper(Env):
@@ -58,7 +59,11 @@ class EnhancedUnityWrapper(Env):
         self.ball_tracker = BallTracker() if use_ball_tracking else None
         self.smooth_tracker = SmoothBallTracker() if use_ball_tracking else None
         self.hit_detector = HitDetector()
-        self.reward_config = reward_config or {"aggression_bonus": 0.0, "hit_bonus": 0.5}
+        self.reward_config = reward_config or {
+            "aggression_bonus": 0.0,
+            "hit_bonus": 0.5,
+            "paddle_x": OBSERVATION_CONFIG.effective_paddle_x,
+        }
 
     def set_opponent_policy(self, policy_fn):
         self.opponent_policy = policy_fn

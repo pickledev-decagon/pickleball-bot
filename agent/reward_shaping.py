@@ -85,7 +85,7 @@ class HitDetector:
 
 def shaped_reward(sparse_reward, ball_pos, training_progress,
                   step=0, hit_detector=None,
-                  paddle_x=0.35, paddle_y=None,
+                  paddle_x=0.65, paddle_y=None,
                   aggression_bonus=0.0, hit_bonus=0.5,
                   proximity_weight=1.0, placement_bonus=0.0):
     dense_weight = annealing_weight(training_progress, end_phase=0.6)

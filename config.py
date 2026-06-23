@@ -17,6 +17,7 @@ Or create a .env file in the project root:
 
 import os
 import pathlib
+from dataclasses import dataclass
 
 # --- Project root ---
 PROJECT_ROOT = pathlib.Path(__file__).parent.resolve()
@@ -83,6 +84,51 @@ PPO_DEFAULTS = {
 
 # --- Opponent buffer ---
 BUFFER_MAX_SIZE = 5
+
+
+# === Observation pipeline → reward parameter coupling ===
+# The camera assignment determines where the paddle appears in the
+# processed observation. Reward proximity must reference the correct
+# x-coordinate. Change this if you modify env/wrapper.py's camera logic.
+
+@dataclass
+class ObservationConfig:
+    """Describes the observation pipeline for reward consistency validation.
+
+    When the camera assignment changes, the effective paddle position in the
+    processed view changes. This config ensures the reward function stays in
+    sync with the observation pipeline.
+
+    - per_agent: each agent reads its own camera → paddle at x≈0.65
+    - shared:   both agents read P0's camera (old bug) → paddle at x≈0.35
+
+    If you change camera_assignment here, the effective_paddle_x is derived
+    automatically. If you provide a mismatched pair, __post_init__ raises.
+    """
+    camera_assignment: str = "per_agent"
+    effective_paddle_x: float = 0.65
+
+    def __post_init__(self):
+        CAMERA_CONSISTENCY = {
+            "per_agent": 0.65,
+            "shared": 0.35,
+        }
+        expected = CAMERA_CONSISTENCY.get(self.camera_assignment)
+        if expected is None:
+            raise ValueError(
+                f"Unknown camera_assignment={self.camera_assignment!r}. "
+                f"Choose from: {list(CAMERA_CONSISTENCY.keys())}"
+            )
+        if abs(self.effective_paddle_x - expected) > 0.01:
+            raise ValueError(
+                f"Effective paddle_x={self.effective_paddle_x} is "
+                f"inconsistent with camera_assignment={self.camera_assignment!r} "
+                f"(expected ~{expected}). Update effective_paddle_x to match, "
+                f"or change camera_assignment."
+            )
+
+OBSERVATION_CONFIG = ObservationConfig()
+# Module-level singleton. Import and use wherever paddle_x is needed.
 
 
 def check_build_path():
