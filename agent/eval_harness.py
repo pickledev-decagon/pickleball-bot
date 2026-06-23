@@ -52,17 +52,9 @@ class MatchEvaluator:
         results = defaultdict(int)
         total_steps = 0
         total_point_diff = 0.0
-        # Detect which side this env plays (right by default)
-        side = "unknown"
-        try:
-            test_env = env_fn()
-            side = "left" if getattr(test_env, 'play_as_left', False) else "right"
-            test_env.close()
-        except Exception:
-            pass
-
         # Create ONE environment and reuse it across matches via reset()
         env = env_fn()
+        side = "unknown"
         try:
             for match_i in range(n_matches):
                 # Inject opponent policy
@@ -79,6 +71,8 @@ class MatchEvaluator:
                     raise ValueError(f"Unknown opponent_type: {opponent_type}")
 
                 obs, info = env.reset()
+                if side == "unknown":
+                    side = "left" if getattr(env, 'play_as_left', False) else "right"
                 my_score = 0
                 opp_score = 0
                 match_steps = 0
