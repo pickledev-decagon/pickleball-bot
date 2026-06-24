@@ -243,6 +243,11 @@ def main():
         if sweep_env_kw:
             trial_config.setdefault("env_kwargs", {}).update(sweep_env_kw)
 
+        # Apply reward_kwargs overrides from sweep config (e.g. hit_bonus)
+        sweep_reward_kw = sweep.get("reward_kwargs", {})
+        if sweep_reward_kw:
+            trial_config.setdefault("reward_kwargs", {}).update(sweep_reward_kw)
+
         # Sample and apply sweep parameters
         sampled = {}
         for dot_key, spec in sweep.get("params", {}).items():

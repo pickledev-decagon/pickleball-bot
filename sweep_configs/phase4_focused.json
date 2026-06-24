@@ -1,0 +1,18 @@
+{
+  "name": "phase4_focused",
+  "base_config": "hit_aggression_placement_combo_heatmap",
+  "env_kwargs": {"frame_stack": 16},
+  "n_trials": 20,
+  "steps_per_trial": 20000,
+  "envs": 2,
+  "params": {
+    "ppo_kwargs.ent_coef":      {"type": "loguniform", "min": 0.005, "max": 0.02},
+    "ppo_kwargs.learning_rate":  {"type": "loguniform", "min": 1.5e-4,"max": 3.5e-4},
+    "ppo_kwargs.n_steps":        {"type": "choice",     "values": [256, 512]},
+    "ppo_kwargs.batch_size":     {"type": "choice",     "values": [128, 256]},
+    "ppo_kwargs.clip_range":     {"type": "choice",     "values": [0.15, 0.2, 0.25]},
+    "ppo_kwargs.n_epochs":       {"type": "choice",     "values": [4, 6]},
+    "ppo_kwargs.gamma":          {"type": "uniform",    "min": 0.97, "max": 0.995},
+    "ppo_kwargs.gae_lambda":     {"type": "uniform",    "min": 0.92, "max": 0.98}
+  }
+}

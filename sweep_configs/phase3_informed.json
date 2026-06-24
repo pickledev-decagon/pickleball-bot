@@ -1,0 +1,16 @@
+{
+  "name": "phase3_informed",
+  "base_config": "baseline",
+  "env_kwargs": {"frame_stack": 16},
+  "n_trials": 30,
+  "steps_per_trial": 20000,
+  "envs": 2,
+  "params": {
+    "ppo_kwargs.ent_coef": {"type": "loguniform", "min": 0.0001, "max": 0.01},
+    "ppo_kwargs.learning_rate": {"type": "loguniform", "min": 1e-4, "max": 5e-4},
+    "ppo_kwargs.n_steps": {"type": "choice", "values": [256, 512, 1024]},
+    "ppo_kwargs.batch_size": {"type": "choice", "values": [64, 128, 256]},
+    "ppo_kwargs.clip_range": {"type": "choice", "values": [0.1, 0.15, 0.2, 0.3]},
+    "ppo_kwargs.n_epochs": {"type": "choice", "values": [4, 8]}
+  }
+}

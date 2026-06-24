@@ -14,9 +14,11 @@
 
 ## Current Status
 
-**🟢 Ready to start**
+**🟡 Sweep configs ready; sweeps pending**
 
 > **⚠️ Curriculum Warning:** `run_experiment.py` (used by `grid_search.py` for sweeps) does NOT use the 3-stage curriculum (no-op → square → self-play). Sweeps train against Unity's default opponent only. Results from sweeps may **not** transfer directly to the final curriculum-based training. Use sweep results to narrow hyperparameter ranges, then validate the best configs in the full curriculum pipeline.
+>
+> **Base config:** Phase 4 sweeps now use `hit_aggression_placement_combo_heatmap` (heatmap + 16-frame + best reward combo from Siao Xuan + Yenly).
 
 ---
 
@@ -75,7 +77,7 @@ These criteria apply to every experiment variant you run:
 ### Depends On (what I need from others)
 | What I Need | From Who | Why | Status |
 |------------|----------|-----|--------|
-| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | My hyperparameter sweeps need a working observation pipeline | ⏳ Waiting for Siao Xuan baseline |
+| Baseline observation (heatmap_obs) | **Siao Xuan** — Observation | My hyperparameter sweeps need a working observation pipeline | ✅ On main — `hit_aggression_placement_combo_heatmap` |
 
 ### Depended By (who is waiting on my results)
 | Who Needs Me | What They Need | Why | Status |
@@ -86,7 +88,8 @@ These criteria apply to every experiment variant you run:
 
 ## Next Steps
 
-- [ ] Run `phase3_default.json` sweep (30 trials, ~X hours)
-- [ ] Analyze best params from sweep
-- [ ] Run `phase3_focused.json` sweep with narrowed ranges (20 trials)
+- [ ] Run `phase4_combined.json` sweep (30 trials, base: hit+aggression+placement combo with heatmap, ~6-8h on M5)
+- [ ] Analyze best params from sweep → narrow ranges
+- [ ] Run `phase4_focused.json` sweep with narrowed ranges (20 trials)
+- [ ] Evaluate best checkpoint from each sweep via `run_eval.py` against square opponent
 - [ ] Push best config row to RESULTS.md
