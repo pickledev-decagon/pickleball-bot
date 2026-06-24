@@ -155,6 +155,7 @@ The selected combined reward setting was trained for 50,000 steps using 8 parall
 | hit_aggression_placement_combo_heatmap | Heatmap + 16-frame stack | 50,000 | 8 | 37.1 | -3.216 | 0.00701 | 0.0389 | 0.76272 | Stable | Final reward combo using Siao Xuan’s updated observation setup; value loss decreased and explained variance improved strongly |
 | hit_placement_heatmap | Heatmap + 16-frame stack | 50,000 | 8 | 36.0 | -3.255 | 0.0056 | 0.0471 | 0.4742 | Stable | Revised final reward-shaping candidate without aggression bonus. The model remained stable during 50k training, and the removal of aggression produced more controlled paddle movement during visual inspection. |
 | hit_placement_heatmap | Heatmap + 16-frame stack | 100,000 | 8 | 40.5 | -3.098 | 0.0129 | 0.0532 | 0.4819 | Slightly unstable | Extended diagnostic training requested after the previous 0% evaluation. Explained variance remains similar to the 50k run, but approx KL increased above 0.01, suggesting PPO updates became less stable. This model should be evaluated visually and against square opponent before deciding whether it improves gameplay. |
+| *hit_placement_heatmap(200k) | Heatmap + 16-frame stack with hit and placement rewards | 200,000 | 8 | 37.9 | -2.958 | 0.0123 | 0.0485 | 0.6552 | Stable | Final extended training run after wrapper and reward-shaping fixes. The model achieved higher explained variance than the previous 100k run, suggesting improved value estimation under the updated observation pipeline. |
 
 The 100k extended training did not show clear improvement over the 50k model. Although explained variance increased slightly, the approximate KL rose above 0.01 and value loss also increased. This suggests that longer training did not clearly improve stability, and the 50k `hit_placement_heatmap` checkpoint remains the safer final reward-shaping candidate unless evaluation results show otherwise.
 
@@ -188,6 +189,9 @@ vs square : 0 wins out of 5
 | hit_placement_heatmap(100k) | Right | square | 50 | 50 | 0 | 0 | 100.0% | 18.22 | Final right-side evaluation for 100k checkpoint. The model exceeded the 85% target, although visual inspection suggested a repeated opening-shot strategy rather than fully robust rally response. |
 | hit_placement_heatmap(10k) | Left | square | 5 | 3 | 1 | 1 | 60.0% | 1.2 | Quick diagnostic after applying the left-side ball-position mirroring fix and retraining for 10k steps. The model showed improved left-side behaviour compared with the previous default-position rotation issue, but longer training is required for final evaluation. |
 | hit_placement_heatmap (100k) | Left | square | 50 | 50 | 0 | 0 | 100.0% | 13.1 | Final left-side evaluation after retraining the 100k checkpoint with the fixed left-side ball-position mirroring wrapper. The model exceeded the 85% target against the square opponent. |
+| Config | Side | Opponent | Matches | Wins | Losses | Draws | Win Rate | Avg Point Diff | Notes |
+| hit_placement_heatmap (200k) | Right | square | 50 | 50 | 0 | 0 | 100.0% | 15.88 | Final 200k evaluation using the fixed wrapper visual-observation fallback. The model achieved a perfect win rate against the square opponent on the right side, with a strong average point difference of 15.88. |
+| hit_placement_heatmap (200k) | Left | square | 50 | 50 | 0 | 0 | 100.0% | 17.78 | Final 200k left-side evaluation using the fixed wrapper. The model achieved a perfect win rate against the square opponent, with an average point difference of 17.78. |
 ---
 
 ## Done Criteria

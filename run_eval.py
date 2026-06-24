@@ -1,69 +1,31 @@
-"""
 from stable_baselines3 import PPO
 from agent.eval_harness import MatchEvaluator
 from agent.wrapper_vec import make_unity_env_fn
 from config import BUILD_PATH
 
-CHECKPOINT = "results/hit_aggression_placement_combo_heatmap_20260619_015059.zip"
-N_MATCHES = 50  # quick diagnostic
+CHECKPOINT = "results/hit_placement_heatmap_20260624_021042.zip"
+N_MATCHES = 5
 
 model = PPO.load(CHECKPOINT, device="cpu")
 
 right_fn = make_unity_env_fn(
-    rank=0, build_path=BUILD_PATH,
-    frame_stack=16, use_heatmap=True,
-    play_as_left=False,
-)
-
-evaluator = MatchEvaluator(model, right_fn)
-
-#opponents = ["no_op", "random", "square"]
-opponents = ["square"]
-results = {}
-
-for opp in opponents:
-    print(f"\n=== RIGHT SIDE vs {opp} ===")
-    r = evaluator.evaluate_vs(opp, n_matches=N_MATCHES, env_fn=right_fn)
-    results[opp] = r
-    print(f"Win rate: {r['win_rate']*100:.1f}%  "
-          f"({r['wins']}W {r['losses']}L {r['draws']}D)  "
-          f"avg point diff: {r['avg_point_diff']}")
-
-print("\n=== SUMMARY ===")
-print(f"vs no_op  : {results['no_op']['win_rate']*100:.1f}%")
-print(f"vs random : {results['random']['win_rate']*100:.1f}%")
-print(f"vs square : {results['square']['win_rate']*100:.1f}%")
-"""
-
-
-from stable_baselines3 import PPO
-from agent.eval_harness import MatchEvaluator
-from agent.wrapper_vec import make_unity_env_fn
-from config import BUILD_PATH
-
-CHECKPOINT = "results/hit_placement_heatmap_20260621_114914.zip"
-N_MATCHES = 50
-
-model = PPO.load(CHECKPOINT, device="cpu")
-right_fn = make_unity_env_fn(
-    rank=0,
+    rank=1,
+    base_port=7005,
     build_path=BUILD_PATH,
     frame_stack=16,
     use_heatmap=True,
-    play_as_left=False,
+    play_as_left=True,
 )
 
 evaluator = MatchEvaluator(model, right_fn)
 
 print("\n=== RIGHT SIDE vs square ===")
-r = evaluator.evaluate_vs(
-    "square",
-    n_matches=N_MATCHES,
-    env_fn=right_fn
-)
+print("Using worker rank=1, base_port=7005, expected port=7006")
 
-print(f"Win rate: {r['win_rate']*100:.1f}%  "
-      f"({r['wins']}W {r['losses']}L {r['draws']}D)  "
+r = evaluator.evaluate_vs("square", n_matches=N_MATCHES)
+
+print(f"Win rate: {r['win_rate']*100:.1f}% "
+      f"({r['wins']}W {r['losses']}L {r['draws']}D) "
       f"avg point diff: {r['avg_point_diff']}")
 
 print("\n=== SUMMARY ===")
