@@ -63,10 +63,10 @@ FRAME_STACK = 16
 
 # --- Curriculum stages ---
 STAGE1_FRAC = 0.30  # no-op opponent + dense reward
-STAGE2_FRAC = 0.30  # square-motion opponent + fading reward
-STAGE3_FRAC = 0.40  # self-play from buffer + sparse only
+STAGE2_FRAC = 0.70  # square-motion opponent + fading reward
+STAGE3_FRAC = 0.00  # self-play — REMOVED (exploits past selves, doesn't transfer)
 TIMESTEPS_PER_STAGE = 100_000
-TOTAL_TIMESTEPS = int(TIMESTEPS_PER_STAGE * 3)
+TOTAL_TIMESTEPS = int(TIMESTEPS_PER_STAGE * 2)  # 200k, 2 stages only
 
 
 # --- PPO defaults ---

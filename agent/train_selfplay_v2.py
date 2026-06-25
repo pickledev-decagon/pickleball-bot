@@ -45,10 +45,9 @@ def square_motion_policy(obs, step_counter):
 
 class CurriculumCallback(BaseCallback):
     """
-    SB3 callback that implements 3-stage curriculum:
+    SB3 callback that implements 2-stage curriculum:
       Stage 1 (0-30%): no-op opponent + dense reward
-      Stage 2 (30-60%): square-motion opponent + fading dense reward
-      Stage 3 (60-100%): self-play from opponent buffer + sparse only
+      Stage 2 (30-100%): square-motion opponent + fading dense reward
     """
     def __init__(self, total_steps, buffer, buffer_dir, verbose=0):
         super().__init__(verbose)
@@ -58,17 +57,13 @@ class CurriculumCallback(BaseCallback):
         self.stage = 0
         self.square_step_count = [0]
         self.hit_detector = HitDetector()
-        self.opp_model = None
-        self.opp_ckpt = None
         self._current_opp_fn = None
 
     def get_stage(self, progress):
         if progress < STAGE1_FRAC:
             return 1
-        elif progress < STAGE1_FRAC + STAGE2_FRAC:
-            return 2
         else:
-            return 3
+            return 2
 
     def _get_wrapper(self, env):
         from env.wrapper import EnhancedUnityWrapper
@@ -110,27 +105,11 @@ class CurriculumCallback(BaseCallback):
 
         if stage == 1:
             fn = lambda obs: np.array([1, 1, 1], dtype=np.int32)
-        elif stage == 2:
+        else:
             counter = self.square_step_count
             def _square_policy(obs):
                 return square_motion_policy(obs, counter)
             fn = _square_policy
-        else:
-            ckpt = self.buffer.sample()
-            if ckpt is None:
-                # Buffer empty — fall back to no-op until checkpoints are added
-                fn = lambda obs: np.array([1, 1, 1], dtype=np.int32)
-            else:
-                path = os.path.join(self.buffer_dir, ckpt)
-                if self.opp_ckpt != ckpt or self.opp_model is None:
-                    self.opp_model = PPO.load(path, device="cpu")
-                    self.opp_ckpt = ckpt
-                model = self.opp_model
-                def _buffer_policy(obs):
-                    obs_batch = np.expand_dims(obs, axis=0)
-                    action, _ = model.predict(obs_batch, deterministic=True)
-                    return action[0]
-                fn = _buffer_policy
 
         self._current_opp_fn = fn
         return fn
@@ -183,8 +162,7 @@ def train():
     print(f"Training: {TOTAL_TIMESTEPS} total steps, "
           f"{NUM_ENVS} parallel envs")
     print(f"  Stage 1 (0-{int(STAGE1_FRAC*100)}%): no-op opponent + dense reward")
-    print(f"  Stage 2 ({int(STAGE1_FRAC*100)}-{int((STAGE1_FRAC+STAGE2_FRAC)*100)}%): square-motion opponent")
-    print(f"  Stage 3 ({int((STAGE1_FRAC+STAGE2_FRAC)*100)}-100%): self-play opponent buffer")
+    print(f"  Stage 2 ({int(STAGE1_FRAC*100)}-100%): square-motion opponent + fading reward")
 
     start = time.time()
     model.learn(
