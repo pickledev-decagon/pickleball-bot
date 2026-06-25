@@ -166,7 +166,6 @@ class EnhancedUnityWrapper(Env):
         kx = cv2.getGaussianKernel(kernel_size, sigma)
         ky = cv2.getGaussianKernel(kernel_size, sigma)
         kernel = kx @ ky.T
-        kernel = kernel / kernel.max()  # Normalize peak to 1.0
         x1 = max(0, gx - kernel_size // 2)
         x2 = min(w, gx + kernel_size // 2 + 1)
         y1 = max(0, gy - kernel_size // 2)

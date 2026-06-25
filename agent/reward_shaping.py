@@ -66,11 +66,9 @@ def detect_paddle_hit(ball_trajectory, threshold=0.02):
     recent = list(ball_trajectory)[-3:]
     if any(p[0] < 0 for p in recent):
         return False
-    # Compute full 2D velocity change magnitude to catch both
-    # horizontal drives and vertical dinks.
-    dv1 = np.array([recent[1][0] - recent[0][0], recent[1][1] - recent[0][1]])
-    dv2 = np.array([recent[2][0] - recent[1][0], recent[2][1] - recent[1][1]])
-    velocity_change = np.linalg.norm(dv2 - dv1)
+    dx1 = recent[1][0] - recent[0][0]
+    dx2 = recent[2][0] - recent[1][0]
+    velocity_change = abs(dx2 - dx1)
     return velocity_change > threshold
 
 
@@ -106,12 +104,9 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
         )
         if hit_detector is not None and hit_detector.update(ball_pos, step):
             reward += dense_weight * hit_bonus
-            # Placement reward fires at hit time (not scoring time) so we
-            # evaluate placement from the actual ball position at contact.
-            if placement_bonus > 0 and ball_pos[1] > 0.5:
-                reward += dense_weight * placement_bonus * placement_reward(
-                    ball_pos, last_hitter_was_me=True
-                )
+        if placement_bonus > 0:
+            last_hitter_was_me = (sparse_reward > 0)
+            reward += dense_weight * placement_bonus * placement_reward(ball_pos, last_hitter_was_me)
     if aggression_bonus > 0 and ball_pos[1] > 0.5:
         reward += aggression_bonus
 
