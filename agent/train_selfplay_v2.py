@@ -167,6 +167,7 @@ def train():
         device="cpu",
         verbose=1,
         tensorboard_log=LOG_DIR,
+        policy_kwargs={"normalize_images": False},
         **PPO_DEFAULTS,
     )
 
