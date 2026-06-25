@@ -14,10 +14,11 @@ class EnhancedUnityWrapper(Env):
                  heatmap_sigma=5, ##NEW
                  heatmap_weight=0.7, ##NEW
                  reward_config=None, opponent_policy=None, training_progress=0.0,
-                 play_as_left=False):
+                 play_as_left=False, apply_reward_shaping=True):
         
         self.heatmap_sigma = heatmap_sigma ##NEW
         self.heatmap_weight = heatmap_weight ##NEW
+        self.apply_reward_shaping = apply_reward_shaping
 
         self.env = unity_env
         self.play_as_left = play_as_left
@@ -96,11 +97,12 @@ class EnhancedUnityWrapper(Env):
         self.ball_tracker = BallTracker() if use_ball_tracking else None
         self.smooth_tracker = SmoothBallTracker() if use_ball_tracking else None
         self.hit_detector = HitDetector()
-        self.reward_config = reward_config or {
+        _default_config = {
             "aggression_bonus": 0.0,
             "hit_bonus": 0.5,
             "paddle_x": OBSERVATION_CONFIG.effective_paddle_x,
         }
+        self.reward_config = {**_default_config, **(reward_config or {})}
 
     def set_opponent_policy(self, policy_fn):
         self.opponent_policy = policy_fn
@@ -164,6 +166,7 @@ class EnhancedUnityWrapper(Env):
         kx = cv2.getGaussianKernel(kernel_size, sigma)
         ky = cv2.getGaussianKernel(kernel_size, sigma)
         kernel = kx @ ky.T
+        kernel = kernel / kernel.max()  # Normalize peak to 1.0
         x1 = max(0, gx - kernel_size // 2)
         x2 = min(w, gx + kernel_size // 2 + 1)
         y1 = max(0, gy - kernel_size // 2)
@@ -172,9 +175,7 @@ class EnhancedUnityWrapper(Env):
         kx2 = kernel_size // 2 + (x2 - gx)
         ky1 = kernel_size // 2 - (gy - y1)
         ky2 = kernel_size // 2 + (y2 - gy)
-        gaussian[y1:y2, x1:x2] = np.maximum(
-            gaussian[y1:y2, x1:x2], kernel[ky1:ky2, kx1:kx2]
-        )
+        gaussian[y1:y2, x1:x2] = kernel[ky1:ky2, kx1:kx2]
         heatmap = np.expand_dims(gaussian, axis=0)
         #return np.clip(obs_tensor + heatmap * 0.5, 0.0, 1.0)
         ## NEW
@@ -222,6 +223,8 @@ class EnhancedUnityWrapper(Env):
 
         self.prev_raw_frame = None
         self._step_count = 0
+        if self.hit_detector is not None:
+            self.hit_detector.reset()
         return np.concatenate(list(self.frames), axis=0), info
 
     def step(self, action):
@@ -262,7 +265,7 @@ class EnhancedUnityWrapper(Env):
         self.frames.append(obs)
 
         agent_reward = rewards[self.agent] - rewards[self.agent_other]
-        if self.ball_tracker is not None:
+        if self.apply_reward_shaping and self.ball_tracker is not None:
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
             agent_reward = shaped_reward(
                 agent_reward, ball_pos, training_progress=self.training_progress,

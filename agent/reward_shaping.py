@@ -10,7 +10,7 @@ def annealing_weight(progress, start_phase=0.0, end_phase=0.6):
     return 1.0 - (progress - start_phase) / (end_phase - start_phase)
 
 
-def dense_distance_reward(ball_pos, paddle_x=0.65, paddle_y=None):
+def dense_distance_reward(ball_pos, paddle_x=0.65, paddle_y=None, paddle_pos_y=None):
     if ball_pos[0] < 0:
         return 0.0
     # If actual paddle y-position is unknown, use ball's y as an estimate.
@@ -19,8 +19,10 @@ def dense_distance_reward(ball_pos, paddle_x=0.65, paddle_y=None):
     # paddle_y=0.5 penalized the ball for being high or low on the court).
     if paddle_y is None:
         paddle_y = ball_pos[1]
+    # Use real paddle_y when available (from paddle detection)
+    effective_y = paddle_pos_y if paddle_pos_y is not None else paddle_y
     dx = ball_pos[0] - paddle_x
-    dy = ball_pos[1] - paddle_y
+    dy = ball_pos[1] - effective_y
     dist = np.sqrt(dx**2 + dy**2)
     return -dist * 0.01
 
@@ -64,15 +66,21 @@ def detect_paddle_hit(ball_trajectory, threshold=0.02):
     recent = list(ball_trajectory)[-3:]
     if any(p[0] < 0 for p in recent):
         return False
-    dx1 = recent[1][0] - recent[0][0]
-    dx2 = recent[2][0] - recent[1][0]
-    velocity_change = abs(dx2 - dx1)
+    # Compute full 2D velocity change magnitude to catch both
+    # horizontal drives and vertical dinks.
+    dv1 = np.array([recent[1][0] - recent[0][0], recent[1][1] - recent[0][1]])
+    dv2 = np.array([recent[2][0] - recent[1][0], recent[2][1] - recent[1][1]])
+    velocity_change = np.linalg.norm(dv2 - dv1)
     return velocity_change > threshold
 
 
 class HitDetector:
     def __init__(self, window=5):
         self.trajectory = deque(maxlen=window)
+        self.last_hit_step = -100
+
+    def reset(self):
+        self.trajectory.clear()
         self.last_hit_step = -100
 
     def update(self, ball_pos, step):
@@ -87,32 +95,24 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
                   step=0, hit_detector=None,
                   paddle_x=0.65, paddle_y=None,
                   aggression_bonus=0.0, hit_bonus=0.5,
-                  proximity_weight=1.0, placement_bonus=0.0):
+                  proximity_weight=1.0, placement_bonus=0.0,
+                  paddle_pos_y=None):
     dense_weight = annealing_weight(training_progress, end_phase=0.6)
     reward = sparse_reward
 
-    # Debug: print ball position every 100 steps
-    # if step % 100 == 0:
-    #     print(
-    #         f"[reward-debug] step={step}, "
-    #         f"ball_pos={ball_pos}, "
-    #         f"sparse_reward={sparse_reward}, "
-    #         f"dense_weight={dense_weight:.3f}, "
-    #         f"progress={training_progress:.3f}"
-    #     )
-
     if dense_weight > 0:
-        reward += dense_weight * proximity_weight * dense_distance_reward(ball_pos, paddle_x, paddle_y)
+        reward += dense_weight * proximity_weight * dense_distance_reward(
+            ball_pos, paddle_x, paddle_y, paddle_pos_y
+        )
         if hit_detector is not None and hit_detector.update(ball_pos, step):
             reward += dense_weight * hit_bonus
-        if placement_bonus > 0:
-            # Simple heuristic: if ball is on opponent side and we got positive reward,
-            # we likely just hit it. Reward placement quality.
-            #last_hitter_was_me = (sparse_reward > 0 or ball_pos[1] > 0.5)
-            last_hitter_was_me = (sparse_reward > 0)
-            reward += dense_weight * placement_bonus * placement_reward(ball_pos, last_hitter_was_me)
+            # Placement reward fires at hit time (not scoring time) so we
+            # evaluate placement from the actual ball position at contact.
+            if placement_bonus > 0 and ball_pos[1] > 0.5:
+                reward += dense_weight * placement_bonus * placement_reward(
+                    ball_pos, last_hitter_was_me=True
+                )
     if aggression_bonus > 0 and ball_pos[1] > 0.5:
         reward += aggression_bonus
 
-    
     return reward

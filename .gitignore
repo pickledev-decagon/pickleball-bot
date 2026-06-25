@@ -42,6 +42,7 @@ phase-4*/
 
 # === Local-only docs ===
 git-recovery-handbook.md
+prototype_plan.md
 
 # === Unity build binary (download separately) ===
 dPickleball BuildFiles/**

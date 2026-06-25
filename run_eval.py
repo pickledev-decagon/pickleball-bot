@@ -8,7 +8,7 @@ N_MATCHES = 5
 
 model = PPO.load(CHECKPOINT, device="cpu")
 
-right_fn = make_unity_env_fn(
+left_fn = make_unity_env_fn(
     rank=1,
     base_port=7005,
     build_path=BUILD_PATH,
@@ -17,9 +17,9 @@ right_fn = make_unity_env_fn(
     play_as_left=True,
 )
 
-evaluator = MatchEvaluator(model, right_fn)
+evaluator = MatchEvaluator(model, left_fn)
 
-print("\n=== RIGHT SIDE vs square ===")
+print("\n=== LEFT SIDE vs square ===")
 print("Using worker rank=1, base_port=7005, expected port=7006")
 
 r = evaluator.evaluate_vs("square", n_matches=N_MATCHES)
@@ -29,6 +29,6 @@ print(f"Win rate: {r['win_rate']*100:.1f}% "
       f"avg point diff: {r['avg_point_diff']}")
 
 print("\n=== SUMMARY ===")
-print(f"Right side vs square: {r['win_rate']*100:.1f}% "
+print(f"Left side vs square: {r['win_rate']*100:.1f}% "
       f"({r['wins']}W {r['losses']}L {r['draws']}D), "
       f"avg point diff: {r['avg_point_diff']}")

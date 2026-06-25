@@ -54,6 +54,7 @@ class MatchEvaluator:
         total_point_diff = 0.0
         # Create ONE environment and reuse it across matches via reset()
         env = env_fn()
+        env.apply_reward_shaping = False  # Bypass shaped reward during eval
         side = "unknown"
         try:
             for match_i in range(n_matches):
@@ -86,11 +87,10 @@ class MatchEvaluator:
                     match_steps += 1
 
                     # Extract score from info dict if available, else infer from reward
-                    my_score = info.get("my_score", my_score)
-                    opp_score = info.get("opp_score", opp_score)
-
-                    # Fallback: infer from sparse reward spikes (point won/lost)
-                    if reward > 0.8:
+                    if "my_score" in info and "opp_score" in info:
+                        my_score = info["my_score"]
+                        opp_score = info["opp_score"]
+                    elif reward > 0.8:
                         my_score += 1
                     elif reward < -0.8:
                         opp_score += 1
@@ -144,9 +144,11 @@ class MatchEvaluator:
         right_fn = self.env_fn
 
         # Create a left-side env factory
+        if build_path is None:
+            raise ValueError("build_path is required for benchmark_all()")
         from agent.wrapper_vec import make_unity_env_fn
         left_fn = make_unity_env_fn(
-            rank=99, build_path=build_path or "/dev/null",
+            rank=99, build_path=build_path,
             play_as_left=True, frame_stack=16,
         )
 

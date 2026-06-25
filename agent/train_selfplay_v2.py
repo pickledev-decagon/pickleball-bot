@@ -106,7 +106,7 @@ class CurriculumCallback(BaseCallback):
             return self._current_opp_fn
 
         if stage == 1:
-            fn = lambda obs: np.array([0, 0, 0], dtype=np.int32)
+            fn = lambda obs: np.array([1, 1, 1], dtype=np.int32)
         elif stage == 2:
             counter = self.square_step_count
             def _square_policy(obs):
@@ -116,7 +116,7 @@ class CurriculumCallback(BaseCallback):
             ckpt = self.buffer.sample()
             if ckpt is None:
                 # Buffer empty — fall back to no-op until checkpoints are added
-                fn = lambda obs: np.array([0, 0, 0], dtype=np.int32)
+                fn = lambda obs: np.array([1, 1, 1], dtype=np.int32)
             else:
                 path = os.path.join(self.buffer_dir, ckpt)
                 if self.opp_ckpt != ckpt or self.opp_model is None:
