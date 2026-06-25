@@ -4,6 +4,9 @@ import time
 import json
 import numpy as np
 from datetime import datetime
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 
