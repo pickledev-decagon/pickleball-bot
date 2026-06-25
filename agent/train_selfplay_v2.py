@@ -140,6 +140,14 @@ def train():
         num_envs=NUM_ENVS,
         frame_stack=FRAME_STACK,
         use_ball_tracking=True,
+        use_heatmap=True,
+        heatmap_sigma=5,
+        heatmap_weight=0.7,
+        reward_config={
+            "hit_bonus": 1.0,
+            "aggression_bonus": 0.0,
+            "placement_bonus": 0.025,
+        },
     )
 
     curriculum_callback = CurriculumCallback(
