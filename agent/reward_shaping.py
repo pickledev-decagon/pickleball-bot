@@ -66,9 +66,11 @@ def detect_paddle_hit(ball_trajectory, threshold=0.02):
     recent = list(ball_trajectory)[-3:]
     if any(p[0] < 0 for p in recent):
         return False
-    dx1 = recent[1][0] - recent[0][0]
-    dx2 = recent[2][0] - recent[1][0]
-    velocity_change = abs(dx2 - dx1)
+    # Compute full 2D velocity change magnitude to catch both
+    # horizontal drives and vertical dinks.
+    dv1 = np.array([recent[1][0] - recent[0][0], recent[1][1] - recent[0][1]])
+    dv2 = np.array([recent[2][0] - recent[1][0], recent[2][1] - recent[1][1]])
+    velocity_change = np.linalg.norm(dv2 - dv1)
     return velocity_change > threshold
 
 
@@ -94,7 +96,8 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
                   paddle_x=0.65, paddle_y=None,
                   aggression_bonus=0.0, hit_bonus=0.5,
                   proximity_weight=1.0, placement_bonus=0.0,
-                  paddle_pos_y=None):
+                  paddle_pos_y=None, rotation_penalty=0.0,
+                  rotation_action=1):
     dense_weight = annealing_weight(training_progress, end_phase=0.6)
     reward = sparse_reward
 
@@ -109,5 +112,8 @@ def shaped_reward(sparse_reward, ball_pos, training_progress,
             reward += dense_weight * placement_bonus * placement_reward(ball_pos, last_hitter_was_me)
     if aggression_bonus > 0 and ball_pos[1] > 0.5:
         reward += aggression_bonus
+
+    if rotation_penalty > 0 and rotation_action != 1:
+        reward -= rotation_penalty
 
     return reward

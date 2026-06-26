@@ -64,6 +64,8 @@ class CompetitionPreprocessor:
         self.frames.clear()
         self._initialized = False
 
+    # ⚠️ SYNC WARNING: This must stay identical to env/wrapper.py:_render_heatmap().
+    # Any change to training preprocessing MUST be replicated here.
     def _render_heatmap(self, gray_frame, ball_pos):
         """Overlay Gaussian heatmap at ball position on a single grayscale frame.
         
@@ -136,8 +138,8 @@ class CompetitionPreprocessor:
         # 6. Resize to (84, 168) — cv2.resize uses (width, height)
         gray = cv2.resize(gray, (self.target_w, self.target_h), interpolation=cv2.INTER_AREA)
 
-        # 7. Normalize to [0, 1]
-        gray = gray.astype(np.float32) / 255.0
+        # 7. Unity already returns float32 [0,1] — no /255.0 needed.
+        gray = gray.astype(np.float32)
 
         # 8. Add channel dim -> (1, 84, 168)
         frame = np.expand_dims(gray, axis=0)

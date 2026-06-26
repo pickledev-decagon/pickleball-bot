@@ -167,10 +167,10 @@ class MatchEvaluator:
         """Curriculum stage-2 square motion opponent."""
         side = (step_counter[0] // 30) % 4
         dirs = [
-            np.array([1, 0, 0], dtype=np.int32),
+            np.array([1, 0, 1], dtype=np.int32),
             np.array([0, 1, 1], dtype=np.int32),
-            np.array([2, 0, 2], dtype=np.int32),
-            np.array([0, 2, 0], dtype=np.int32),
+            np.array([2, 0, 1], dtype=np.int32),
+            np.array([0, 2, 1], dtype=np.int32),
         ]
         step_counter[0] += 1
         return dirs[side]

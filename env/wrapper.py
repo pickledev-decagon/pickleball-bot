@@ -118,14 +118,15 @@ class EnhancedUnityWrapper(Env):
         if self.play_as_left:
             obs_tensor = cv2.flip(obs_tensor, 1)
 
+        # NOTE: Unity already returns float32 [0,1] — no /255.0 needed.
         if self.use_rgb:
             obs_tensor = cv2.resize(obs_tensor, (168, 84), interpolation=cv2.INTER_AREA)
-            obs_tensor = obs_tensor.astype(np.float32) / 255.0
+            obs_tensor = obs_tensor.astype(np.float32)
             return obs_tensor.transpose(2, 0, 1)
 
         gray = cv2.cvtColor(obs_tensor, cv2.COLOR_RGB2GRAY)
         gray = cv2.resize(gray, (168, 84), interpolation=cv2.INTER_AREA)
-        gray = gray.astype(np.float32) / 255.0
+        gray = gray.astype(np.float32)
         return np.expand_dims(gray, axis=0)
 
     def _preprocess_frame_diff(self, obs_tensor):
@@ -143,6 +144,10 @@ class EnhancedUnityWrapper(Env):
         self.prev_raw_frame = curr_gray
         return np.expand_dims(thresh.astype(np.float32) / 255.0, axis=0)
 
+    # ⚠️ SYNC WARNING: Any change to this heatmap rendering logic MUST be
+    # replicated in agent/competition_export.py:_render_heatmap().
+    # The training wrapper and competition preprocessor must produce
+    # identical preprocessing for the trained model to work correctly.
     def _render_heatmap(self, obs_tensor, ball_pos):
         if ball_pos[0] < 0:
             return obs_tensor
@@ -166,6 +171,7 @@ class EnhancedUnityWrapper(Env):
         kx = cv2.getGaussianKernel(kernel_size, sigma)
         ky = cv2.getGaussianKernel(kernel_size, sigma)
         kernel = kx @ ky.T
+        kernel = kernel / kernel.max()  # Normalize peak to 1.0 so heatmap_weight controls blend
         x1 = max(0, gx - kernel_size // 2)
         x2 = min(w, gx + kernel_size // 2 + 1)
         y1 = max(0, gy - kernel_size // 2)
@@ -269,6 +275,7 @@ class EnhancedUnityWrapper(Env):
             agent_reward = shaped_reward(
                 agent_reward, ball_pos, training_progress=self.training_progress,
                 step=self._step_count, hit_detector=self.hit_detector,
+                rotation_action=int(action[2]),
                 **self.reward_config,
             )
         self._step_count += 1

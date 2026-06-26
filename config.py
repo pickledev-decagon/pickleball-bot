@@ -86,6 +86,14 @@ PPO_DEFAULTS = {
 BUFFER_MAX_SIZE = 5
 
 
+# --- Reproducibility ---
+SEED = 42
+
+
+# --- Penalty defaults ---
+ROTATION_PENALTY_DEFAULT = 0.001
+
+
 # === Observation pipeline → reward parameter coupling ===
 # The camera assignment determines where the paddle appears in the
 # processed observation. Reward proximity must reference the correct

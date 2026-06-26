@@ -2,7 +2,9 @@ import os
 import sys
 import time
 import json
+import random
 import numpy as np
+import torch
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -15,7 +17,7 @@ from agent.buffer import OpponentBuffer
 from agent.reward_shaping import shaped_reward, HitDetector
 from agent.selfplay_callback import SelfPlayCheckpointCallback
 from config import (
-    BUILD_PATH, NUM_ENVS, FRAME_STACK,
+    BUILD_PATH, NUM_ENVS, FRAME_STACK, SEED,
     STAGE1_FRAC, STAGE2_FRAC, STAGE3_FRAC,
     TIMESTEPS_PER_STAGE, TOTAL_TIMESTEPS,
     CHECKPOINT_DIR as SAVE_DIR, LOG_DIR, BUFFER_DIR, BUFFER_MAX_SIZE,
@@ -34,10 +36,10 @@ buffer = OpponentBuffer(BUFFER_DIR, max_size=5)
 def square_motion_policy(obs, step_counter):
     side = (step_counter[0] // 30) % 4
     dirs = [
-        np.array([1, 0, 0], dtype=np.int32),
+        np.array([1, 0, 1], dtype=np.int32),
         np.array([0, 1, 1], dtype=np.int32),
-        np.array([2, 0, 2], dtype=np.int32),
-        np.array([0, 2, 0], dtype=np.int32),
+        np.array([2, 0, 1], dtype=np.int32),
+        np.array([0, 2, 1], dtype=np.int32),
     ]
     step_counter[0] += 1
     return dirs[side]
@@ -116,6 +118,12 @@ class CurriculumCallback(BaseCallback):
 
 
 def train():
+    # --- Reproducibility ---
+    random.seed(SEED)
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    print(f"Random seed set to {SEED}")
+
     print(f"Creating {NUM_ENVS} parallel Unity environments...")
     vec_env = create_vec_env(
         build_path=BUILD_PATH,
@@ -129,6 +137,7 @@ def train():
             "hit_bonus": 1.0,
             "aggression_bonus": 0.0,
             "placement_bonus": 0.025,
+            "rotation_penalty": 0.01,
         },
     )
 
@@ -157,6 +166,13 @@ def train():
         buffer_dir=BUFFER_DIR,
         name_prefix=f"curriculum_{timestamp}",
         total_timesteps=TOTAL_TIMESTEPS,
+        metadata_extra={
+            "seed": SEED,
+            "frame_stack": FRAME_STACK,
+            "heatmap_sigma": 5,
+            "heatmap_weight": 0.7,
+            "num_envs": NUM_ENVS,
+        },
     )
 
     print(f"Training: {TOTAL_TIMESTEPS} total steps, "

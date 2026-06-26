@@ -17,6 +17,7 @@ EXPERIMENTS = {
             "aggression_bonus": 0.0,
             "proximity_weight": 1.0,
             "hit_bonus": 0.5,
+            "rotation_penalty": 0.01,
         },
         "curriculum": True,
     },
@@ -356,6 +357,25 @@ EXPERIMENTS = {
     },
 
     # HIT + PLACEMENT + HEATMAP
+    "sparse_only": {
+        "name": "Sparse Win/Loss Only",
+        "description": "Minimal: grayscale, 4-stack, no heatmap, no reward shaping, no curriculum, standard PPO",
+        "env_kwargs": {
+            "use_rgb": False,
+            "use_frame_diff": False,
+            "use_heatmap": False,
+            "frame_stack": 4,
+        },
+        "reward_kwargs": {
+            "proximity_weight": 0.0,
+            "hit_bonus": 0.0,
+            "aggression_bonus": 0.0,
+            "placement_bonus": 0.0,
+        },
+        "curriculum": False,
+        "parent": "baseline",
+    },
+
     "hit_placement_heatmap": {
         "name": "Hit + Placement Heatmap",
         "description": "Reward shaping variant using hit and placement rewards with heatmap observation, without aggression bonus",
@@ -369,6 +389,7 @@ EXPERIMENTS = {
             "hit_bonus": 1.0,
             "aggression_bonus": 0.0,
             "placement_bonus": 0.025,
+            "rotation_penalty": 0.01,
         },
         "parent": "baseline",
     },

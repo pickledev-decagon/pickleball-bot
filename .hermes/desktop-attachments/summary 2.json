@@ -1,0 +1,1382 @@
+[
+  {
+    "trial_id": 0,
+    "timestamp": "20260621_174500",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 580.5,
+    "steps_per_second": 34.5,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.005070649229263747,
+        "batch_size": 128,
+        "learning_rate": 0.00034403491599612894,
+        "n_steps": 256,
+        "clip_range": 0.2,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2955921490987143,
+    "train/policy_gradient_loss": -9.675184264779091e-05,
+    "train/value_loss": 0.040423586343725525,
+    "train/approx_kl": 4.112371243536472e-06,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.005070649229263747,
+      "ppo_kwargs.learning_rate": 0.00034403491599612894,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 1,
+    "timestamp": "20260621_175504",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 590.8,
+    "steps_per_second": 33.9,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0010360143594525125,
+        "batch_size": 256,
+        "learning_rate": 0.000493052521705687,
+        "n_steps": 128,
+        "clip_range": 0.1,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2876896063486734,
+    "train/policy_gradient_loss": 6.0505544145902e-05,
+    "train/value_loss": 0.07579970608154933,
+    "train/approx_kl": 2.1979212760925293e-06,
+    "train/explained_variance": 4.7266483306884766e-05,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0010360143594525125,
+      "ppo_kwargs.learning_rate": 0.000493052521705687,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 2,
+    "timestamp": "20260621_181207",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1010.2,
+    "steps_per_second": 19.8,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.019684865632455428,
+        "batch_size": 128,
+        "learning_rate": 0.0008235117321083629,
+        "n_steps": 128,
+        "clip_range": 0.1,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2903434932231903,
+    "train/policy_gradient_loss": -0.0005111166974529624,
+    "train/value_loss": 0.007230303890537471,
+    "train/approx_kl": 9.382027201354504e-05,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.019684865632455428,
+      "ppo_kwargs.learning_rate": 0.0008235117321083629,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 3,
+    "timestamp": "20260621_182941",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1041.0,
+    "steps_per_second": 19.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00023317264912644492,
+        "batch_size": 64,
+        "learning_rate": 0.00012734274548630332,
+        "n_steps": 128,
+        "clip_range": 0.15,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.18019637465477,
+    "train/policy_gradient_loss": -0.011906604529940523,
+    "train/value_loss": 0.03460578035446815,
+    "train/approx_kl": 0.011716347187757492,
+    "train/explained_variance": -0.005403876304626465,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00023317264912644492,
+      "ppo_kwargs.learning_rate": 0.00012734274548630332,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 4,
+    "timestamp": "20260621_184544",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 950.5,
+    "steps_per_second": 21.0,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00016580701496278282,
+        "batch_size": 256,
+        "learning_rate": 0.0005186733838249864,
+        "n_steps": 512,
+        "clip_range": 0.3,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.8331666216254234,
+    "train/policy_gradient_loss": -0.007665817945962772,
+    "train/value_loss": 0.03982128691859543,
+    "train/approx_kl": 0.016686035320162773,
+    "train/explained_variance": 0.42183130979537964,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00016580701496278282,
+      "ppo_kwargs.learning_rate": 0.0005186733838249864,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 5,
+    "timestamp": "20260621_185857",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 779.0,
+    "steps_per_second": 25.7,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0001274579875070732,
+        "batch_size": 64,
+        "learning_rate": 0.00019142609949763942,
+        "n_steps": 256,
+        "clip_range": 0.15,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.268962860107422,
+    "train/policy_gradient_loss": -0.00268114220428591,
+    "train/value_loss": 0.026730934740044177,
+    "train/approx_kl": 0.0024050551000982523,
+    "train/explained_variance": 0.00044226646423339844,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0001274579875070732,
+      "ppo_kwargs.learning_rate": 0.00019142609949763942,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 6,
+    "timestamp": "20260621_191139",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 747.2,
+    "steps_per_second": 26.8,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00019049959580388066,
+        "batch_size": 128,
+        "learning_rate": 0.00032703150803497724,
+        "n_steps": 1024,
+        "clip_range": 0.15,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.276697094241778,
+    "train/policy_gradient_loss": -0.0013528642399857442,
+    "train/value_loss": 0.047560103509264685,
+    "train/approx_kl": 0.0011338605545461178,
+    "train/explained_variance": 0.40560680627822876,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00019049959580388066,
+      "ppo_kwargs.learning_rate": 0.00032703150803497724,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 7,
+    "timestamp": "20260621_193231",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1235.8,
+    "steps_per_second": 16.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.002895434198804862,
+        "batch_size": 64,
+        "learning_rate": 0.0007302004157401169,
+        "n_steps": 1024,
+        "clip_range": 0.3,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.216864053159952,
+    "train/policy_gradient_loss": -0.001880261968835839,
+    "train/value_loss": 0.035583627943196916,
+    "train/approx_kl": 0.018572460860013962,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.002895434198804862,
+      "ppo_kwargs.learning_rate": 0.0007302004157401169,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 8,
+    "timestamp": "20260621_194331",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 644.2,
+    "steps_per_second": 31.0,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0035301784210292914,
+        "batch_size": 256,
+        "learning_rate": 0.00016266339940629868,
+        "n_steps": 128,
+        "clip_range": 0.1,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2957573731740317,
+    "train/policy_gradient_loss": 1.6903504729270935e-07,
+    "train/value_loss": 0.03939269855618477,
+    "train/approx_kl": 8.521601557731628e-08,
+    "train/explained_variance": 0.00039958953857421875,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0035301784210292914,
+      "ppo_kwargs.learning_rate": 0.00016266339940629868,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 9,
+    "timestamp": "20260621_195747",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 843.7,
+    "steps_per_second": 23.7,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00556413835143886,
+        "batch_size": 128,
+        "learning_rate": 0.0003138233278241191,
+        "n_steps": 128,
+        "clip_range": 0.3,
+        "n_epochs": 4
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2938234210014343,
+    "train/policy_gradient_loss": -0.00034533196594566107,
+    "train/value_loss": 0.023893943522125483,
+    "train/approx_kl": 1.8909573554992676e-05,
+    "train/explained_variance": 1.1146068572998047e-05,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00556413835143886,
+      "ppo_kwargs.learning_rate": 0.0003138233278241191,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 4
+    }
+  },
+  {
+    "trial_id": 10,
+    "timestamp": "20260621_201407",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 967.7,
+    "steps_per_second": 20.7,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0225165086814796,
+        "batch_size": 256,
+        "learning_rate": 0.000623125306219558,
+        "n_steps": 256,
+        "clip_range": 0.1,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2408672720193863,
+    "train/policy_gradient_loss": -0.00044493243331089616,
+    "train/value_loss": 0.04938834463246167,
+    "train/approx_kl": 0.0008212026441469789,
+    "train/explained_variance": 1.0311603546142578e-05,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0225165086814796,
+      "ppo_kwargs.learning_rate": 0.000623125306219558,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 11,
+    "timestamp": "20260621_202625",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 724.9,
+    "steps_per_second": 27.6,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.01404426285449101,
+        "batch_size": 128,
+        "learning_rate": 0.0004762803219184724,
+        "n_steps": 512,
+        "clip_range": 0.2,
+        "n_epochs": 4
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2812624648213387,
+    "train/policy_gradient_loss": -0.0003407249605515972,
+    "train/value_loss": 0.04433425422757864,
+    "train/approx_kl": 0.0003382880240678787,
+    "train/explained_variance": 5.3048133850097656e-05,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.01404426285449101,
+      "ppo_kwargs.learning_rate": 0.0004762803219184724,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 4
+    }
+  },
+  {
+    "trial_id": 12,
+    "timestamp": "20260621_203953",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 794.9,
+    "steps_per_second": 25.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.015487620259482441,
+        "batch_size": 128,
+        "learning_rate": 0.0007790389129680392,
+        "n_steps": 256,
+        "clip_range": 0.3,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2954679131507874,
+    "train/policy_gradient_loss": -0.00045103653489301604,
+    "train/value_loss": 0.049199444552262626,
+    "train/approx_kl": 2.1703657694160938e-05,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.015487620259482441,
+      "ppo_kwargs.learning_rate": 0.0007790389129680392,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 13,
+    "timestamp": "20260621_205721",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1032.7,
+    "steps_per_second": 19.4,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0009632036947518888,
+        "batch_size": 64,
+        "learning_rate": 0.0004075819082455965,
+        "n_steps": 128,
+        "clip_range": 0.2,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.1042774319648743,
+    "train/policy_gradient_loss": -0.017338290490442887,
+    "train/value_loss": 0.06093790882732719,
+    "train/approx_kl": 0.019061511382460594,
+    "train/explained_variance": 3.552436828613281e-05,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0009632036947518888,
+      "ppo_kwargs.learning_rate": 0.0004075819082455965,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 14,
+    "timestamp": "20260621_211407",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 990.8,
+    "steps_per_second": 20.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00026765615718798595,
+        "batch_size": 64,
+        "learning_rate": 0.0004879687374159574,
+        "n_steps": 128,
+        "clip_range": 0.15,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.0520157143473625,
+    "train/policy_gradient_loss": -0.007860503828851506,
+    "train/value_loss": 0.007302672653167974,
+    "train/approx_kl": 0.008928333409130573,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00026765615718798595,
+      "ppo_kwargs.learning_rate": 0.0004879687374159574,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 15,
+    "timestamp": "20260621_212630",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 730.5,
+    "steps_per_second": 27.4,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.01906986604613119,
+        "batch_size": 128,
+        "learning_rate": 0.00027934980001129253,
+        "n_steps": 1024,
+        "clip_range": 0.15,
+        "n_epochs": 4
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2888298146426678,
+    "train/policy_gradient_loss": -0.0008856210151861887,
+    "train/value_loss": 0.03610557240608614,
+    "train/approx_kl": 0.0027169857639819384,
+    "train/explained_variance": 0.5316349864006042,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.01906986604613119,
+      "ppo_kwargs.learning_rate": 0.00027934980001129253,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 4
+    }
+  },
+  {
+    "trial_id": 16,
+    "timestamp": "20260621_214545",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1141.4,
+    "steps_per_second": 17.5,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.001902362282654976,
+        "batch_size": 64,
+        "learning_rate": 0.00059245752181218,
+        "n_steps": 512,
+        "clip_range": 0.3,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.952963525429368,
+    "train/policy_gradient_loss": -0.011933319587114966,
+    "train/value_loss": 0.05605700502928812,
+    "train/approx_kl": 0.017750926315784454,
+    "train/explained_variance": 0.524247407913208,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.001902362282654976,
+      "ppo_kwargs.learning_rate": 0.00059245752181218,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 17,
+    "timestamp": "20260621_220536",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1176.5,
+    "steps_per_second": 17.0,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.007668342548515864,
+        "batch_size": 64,
+        "learning_rate": 0.0001671324346138096,
+        "n_steps": 256,
+        "clip_range": 0.2,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.9625855945050716,
+    "train/policy_gradient_loss": -0.005762593151303008,
+    "train/value_loss": 0.03217945111100562,
+    "train/approx_kl": 0.011210599914193153,
+    "train/explained_variance": 0.6011184453964233,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.007668342548515864,
+      "ppo_kwargs.learning_rate": 0.0001671324346138096,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 18,
+    "timestamp": "20260621_222400",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1089.2,
+    "steps_per_second": 18.4,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00017018824604029525,
+        "batch_size": 256,
+        "learning_rate": 0.00038336615185692976,
+        "n_steps": 1024,
+        "clip_range": 0.1,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.272413555532694,
+    "train/policy_gradient_loss": -0.002919850063335616,
+    "train/value_loss": 0.03827800875296816,
+    "train/approx_kl": 0.0016650084871798754,
+    "train/explained_variance": 0.5751061141490936,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00017018824604029525,
+      "ppo_kwargs.learning_rate": 0.00038336615185692976,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 19,
+    "timestamp": "20260621_223827",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 852.5,
+    "steps_per_second": 23.5,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.011099982905594481,
+        "batch_size": 64,
+        "learning_rate": 0.00011399563131611819,
+        "n_steps": 512,
+        "clip_range": 0.2,
+        "n_epochs": 4
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2587307319045067,
+    "train/policy_gradient_loss": -0.0003421127103138133,
+    "train/value_loss": 0.03590431593329413,
+    "train/approx_kl": 0.0008969984482973814,
+    "train/explained_variance": 0.4048820734024048,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.011099982905594481,
+      "ppo_kwargs.learning_rate": 0.00011399563131611819,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 4
+    }
+  },
+  {
+    "trial_id": 20,
+    "timestamp": "20260621_224926",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 644.1,
+    "steps_per_second": 31.1,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0001050172916665575,
+        "batch_size": 128,
+        "learning_rate": 0.0006261946598770439,
+        "n_steps": 512,
+        "clip_range": 0.15,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2868458131949105,
+    "train/policy_gradient_loss": -0.00402702590993916,
+    "train/value_loss": 0.04227838680769006,
+    "train/approx_kl": 0.005928691942244768,
+    "train/explained_variance": 5.960464477539063e-08,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0001050172916665575,
+      "ppo_kwargs.learning_rate": 0.0006261946598770439,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 21,
+    "timestamp": "20260621_230104",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 684.3,
+    "steps_per_second": 29.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.011001683480273168,
+        "batch_size": 256,
+        "learning_rate": 0.00012007438229686821,
+        "n_steps": 128,
+        "clip_range": 0.2,
+        "n_epochs": 4
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2958260774612427,
+    "train/policy_gradient_loss": -6.488640792667866e-06,
+    "train/value_loss": 0.006406841450370848,
+    "train/approx_kl": 2.468004822731018e-08,
+    "train/explained_variance": -0.0003396272659301758,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.011001683480273168,
+      "ppo_kwargs.learning_rate": 0.00012007438229686821,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 4
+    }
+  },
+  {
+    "trial_id": 22,
+    "timestamp": "20260621_231924",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1087.0,
+    "steps_per_second": 18.4,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0006388575787632317,
+        "batch_size": 64,
+        "learning_rate": 0.00014817313489419163,
+        "n_steps": 512,
+        "clip_range": 0.3,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.0704248398542404,
+    "train/policy_gradient_loss": -0.003277861684182426,
+    "train/value_loss": 0.018300440893654013,
+    "train/approx_kl": 0.009607894346117973,
+    "train/explained_variance": 0.8031705319881439,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0006388575787632317,
+      "ppo_kwargs.learning_rate": 0.00014817313489419163,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 23,
+    "timestamp": "20260621_233242",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 783.5,
+    "steps_per_second": 25.5,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.04502564750081963,
+        "batch_size": 128,
+        "learning_rate": 0.00030165524297787655,
+        "n_steps": 256,
+        "clip_range": 0.1,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.292668422063192,
+    "train/policy_gradient_loss": -0.00033164280466735363,
+    "train/value_loss": 0.05732297617942095,
+    "train/approx_kl": 0.0004526082193478942,
+    "train/explained_variance": -5.364418029785156e-06,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.04502564750081963,
+      "ppo_kwargs.learning_rate": 0.00030165524297787655,
+      "ppo_kwargs.n_steps": 256,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 24,
+    "timestamp": "20260622_015925",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 1098.1,
+    "steps_per_second": 18.2,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.0009312159201506875,
+        "batch_size": 64,
+        "learning_rate": 0.0008414967103822381,
+        "n_steps": 1024,
+        "clip_range": 0.3,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.071492498740554,
+    "train/policy_gradient_loss": -0.004743898090055154,
+    "train/value_loss": 0.03948535798735975,
+    "train/approx_kl": 0.020411327481269836,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.3,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.0009312159201506875,
+      "ppo_kwargs.learning_rate": 0.0008414967103822381,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.3,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 25,
+    "timestamp": "20260622_021427",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 887.9,
+    "steps_per_second": 22.5,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.02778444535782271,
+        "batch_size": 256,
+        "learning_rate": 0.0002245247821852914,
+        "n_steps": 128,
+        "clip_range": 0.2,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2954984605312347,
+    "train/policy_gradient_loss": -4.1649240301921964e-05,
+    "train/value_loss": 0.00017980087250180077,
+    "train/approx_kl": 4.462897777557373e-06,
+    "train/explained_variance": -5.2928924560546875e-05,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.02778444535782271,
+      "ppo_kwargs.learning_rate": 0.0002245247821852914,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 26,
+    "timestamp": "20260622_022855",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 853.6,
+    "steps_per_second": 23.4,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00027692328591006054,
+        "batch_size": 256,
+        "learning_rate": 0.00036816176826900564,
+        "n_steps": 512,
+        "clip_range": 0.1,
+        "n_epochs": 8
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.268703877925873,
+    "train/policy_gradient_loss": -0.005566942476434633,
+    "train/value_loss": 0.0407101892051287,
+    "train/approx_kl": 0.0031375684775412083,
+    "train/explained_variance": 0.5042008459568024,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00027692328591006054,
+      "ppo_kwargs.learning_rate": 0.00036816176826900564,
+      "ppo_kwargs.n_steps": 512,
+      "ppo_kwargs.batch_size": 256,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 8
+    }
+  },
+  {
+    "trial_id": 27,
+    "timestamp": "20260622_023842",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 574.9,
+    "steps_per_second": 34.8,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.005759184682940042,
+        "batch_size": 128,
+        "learning_rate": 0.0006560914770110988,
+        "n_steps": 1024,
+        "clip_range": 0.15,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.2856651892264686,
+    "train/policy_gradient_loss": -0.002929163325461559,
+    "train/value_loss": 0.03589957599372914,
+    "train/approx_kl": 0.002297104336321354,
+    "train/explained_variance": 0.0,
+    "train/clip_range": 0.15,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.005759184682940042,
+      "ppo_kwargs.learning_rate": 0.0006560914770110988,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.15,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 28,
+    "timestamp": "20260622_024848",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 592.9,
+    "steps_per_second": 33.7,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00016709680551827612,
+        "batch_size": 128,
+        "learning_rate": 0.0004416724259651183,
+        "n_steps": 1024,
+        "clip_range": 0.2,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -3.268145819505056,
+    "train/policy_gradient_loss": -0.0030559895628054314,
+    "train/value_loss": 0.047618262974234916,
+    "train/approx_kl": 0.005675583146512508,
+    "train/explained_variance": 1.1801719665527344e-05,
+    "train/clip_range": 0.2,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00016709680551827612,
+      "ppo_kwargs.learning_rate": 0.0004416724259651183,
+      "ppo_kwargs.n_steps": 1024,
+      "ppo_kwargs.batch_size": 128,
+      "ppo_kwargs.clip_range": 0.2,
+      "ppo_kwargs.n_epochs": 3
+    }
+  },
+  {
+    "trial_id": 29,
+    "timestamp": "20260622_030047",
+    "total_steps": 20000,
+    "num_envs": 2,
+    "elapsed_seconds": 706.6,
+    "steps_per_second": 28.3,
+    "config": {
+      "name": "Baseline v2",
+      "description": "Current default: grayscale, 4-stack, entropy 0.01, curriculum, proximity reward",
+      "ppo_kwargs": {
+        "ent_coef": 0.00018100421335418053,
+        "batch_size": 64,
+        "learning_rate": 0.00032275555188963825,
+        "n_steps": 128,
+        "clip_range": 0.1,
+        "n_epochs": 3
+      },
+      "env_kwargs": {
+        "use_rgb": false,
+        "use_frame_diff": false,
+        "use_heatmap": false,
+        "frame_stack": 16
+      },
+      "reward_kwargs": {
+        "aggression_bonus": 0.0,
+        "proximity_weight": 1.0,
+        "hit_bonus": 0.5
+      },
+      "curriculum": true
+    },
+    "train/entropy_loss": -2.459020455678304,
+    "train/policy_gradient_loss": -0.0044802166521549225,
+    "train/value_loss": 0.008196616196073592,
+    "train/approx_kl": 0.004523928742855787,
+    "train/explained_variance": -2.384185791015625e-07,
+    "train/clip_range": 0.1,
+    "sampled_params": {
+      "ppo_kwargs.ent_coef": 0.00018100421335418053,
+      "ppo_kwargs.learning_rate": 0.00032275555188963825,
+      "ppo_kwargs.n_steps": 128,
+      "ppo_kwargs.batch_size": 64,
+      "ppo_kwargs.clip_range": 0.1,
+      "ppo_kwargs.n_epochs": 3
+    }
+  }
+]
