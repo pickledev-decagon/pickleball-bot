@@ -36,10 +36,10 @@ buffer = OpponentBuffer(BUFFER_DIR, max_size=5)
 def square_motion_policy(obs, step_counter):
     side = (step_counter[0] // 30) % 4
     dirs = [
-        np.array([1, 0, 1], dtype=np.int32),
-        np.array([0, 1, 1], dtype=np.int32),
-        np.array([2, 0, 1], dtype=np.int32),
-        np.array([0, 2, 1], dtype=np.int32),
+        np.array([1, 0, 0], dtype=np.int32),
+        np.array([0, 1, 0], dtype=np.int32),
+        np.array([2, 0, 0], dtype=np.int32),
+        np.array([0, 2, 0], dtype=np.int32),
     ]
     step_counter[0] += 1
     return dirs[side]
@@ -106,7 +106,7 @@ class CurriculumCallback(BaseCallback):
             return self._current_opp_fn
 
         if stage == 1:
-            fn = lambda obs: np.array([1, 1, 1], dtype=np.int32)
+            fn = lambda obs: np.array([0, 0, 0], dtype=np.int32)
         else:
             counter = self.square_step_count
             def _square_policy(obs):
@@ -148,11 +148,11 @@ def train():
     )
 
     model = PPO(
-        "CnnPolicy",
+        "MultiInputPolicy",  # Dict obs: visual (CNN) + vector (MLP)
         vec_env,
         n_steps=2048 // NUM_ENVS,
         batch_size=128,
-        device="cpu",
+        device="mps",
         verbose=1,
         tensorboard_log=LOG_DIR,
         policy_kwargs={"normalize_images": False},

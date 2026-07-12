@@ -3,7 +3,7 @@ import cv2
 from collections import deque
 from gymnasium import Env, spaces
 from mlagents_envs.envs.unity_parallel_env import UnityParallelEnv
-from env.preprocessing import BallTracker, SmoothBallTracker
+from env.preprocessing import BallTracker, SmoothBallTracker, detect_paddles
 from agent.reward_shaping import HitDetector, shaped_reward
 from config import OBSERVATION_CONFIG
 
@@ -14,11 +14,16 @@ class EnhancedUnityWrapper(Env):
                  heatmap_sigma=5, ##NEW
                  heatmap_weight=0.7, ##NEW
                  reward_config=None, opponent_policy=None, training_progress=0.0,
-                 play_as_left=False, apply_reward_shaping=True):
+                 play_as_left=False, apply_reward_shaping=True,
+                 mask_rotation=False,  # Fix 4: rotation masking for no-rotation training
+                 max_rally_steps=500):  # stalemate termination (500 steps = 5s at 0.01s/step)
         
         self.heatmap_sigma = heatmap_sigma ##NEW
         self.heatmap_weight = heatmap_weight ##NEW
         self.apply_reward_shaping = apply_reward_shaping
+        self.mask_rotation = mask_rotation  # Fix 4: force action[2]=0 when True
+        self.max_rally_steps = max_rally_steps  # stalemate termination threshold
+        self._steps_since_point = 0  # counter for stalemate detection
 
         self.env = unity_env
         self.play_as_left = play_as_left
@@ -84,9 +89,16 @@ class EnhancedUnityWrapper(Env):
         else:
             obs_shape = (frame_stack, h, w)
 
-        self.observation_space = spaces.Box(
-            low=0.0, high=1.0, shape=obs_shape, dtype=np.float32
-        )
+        # Dict observation space: visual (CNN) + vector (MLP)
+        # vector = [ball_vx, ball_vy, paddle_x, paddle_y, ball_x, ball_y]
+        self.observation_space = spaces.Dict({
+            "visual": spaces.Box(
+                low=0.0, high=1.0, shape=obs_shape, dtype=np.float32
+            ),
+            "vector": spaces.Box(
+                low=-1.0, high=1.0, shape=(6,), dtype=np.float32
+            ),
+        })
         raw_action_space = self.env.action_spaces[self.agent]
         import gymnasium as gym
         self.action_space = gym.spaces.MultiDiscrete(raw_action_space.nvec)
@@ -97,6 +109,10 @@ class EnhancedUnityWrapper(Env):
         self.ball_tracker = BallTracker() if use_ball_tracking else None
         self.smooth_tracker = SmoothBallTracker() if use_ball_tracking else None
         self.hit_detector = HitDetector()
+        self._last_ball_pos = (-1.0, -1.0)  # for opponent_policy (updated each step)
+        self._last_opp_paddle_pos = (-1.0, -1.0)  # opponent's detected paddle pos (updated each step)
+        self._last_ball_pos_for_vel = (-1.0, -1.0)  # for ball velocity computation
+        self._last_vector_obs = np.zeros(6, dtype=np.float32)  # cached vector obs for opponent
         _default_config = {
             "aggression_bonus": 0.0,
             "hit_bonus": 0.5,
@@ -109,6 +125,42 @@ class EnhancedUnityWrapper(Env):
 
     def set_training_progress(self, progress):
         self.training_progress = float(progress)
+
+    def _compute_vector_obs(self, info):
+        """Compute 6-dim vector observation from detected ball/paddle positions.
+
+        Returns: np.array([ball_vx, ball_vy, paddle_x, paddle_y, ball_x, ball_y],
+                          dtype=float32)
+        - ball_vx, ball_vy: velocity in normalized coords/step, scaled x10, clipped [-1,1]
+          At 30fps, ball crossing court (1.0 units) in 1s = 30 steps -> vel ~0.033/step.
+          Scaling x10 gives ~0.33, a usable range for the network.
+        - paddle_x, paddle_y: our paddle position [0,1] or -1 if not detected
+        - ball_x, ball_y: ball position [0,1] or -1 if not detected
+
+        Must be called AFTER ball_pos mirroring (for left-side play) so the
+        vector is in the same coordinate frame as the visual observation.
+        """
+        ball_pos = info.get("ball_pos", (-1.0, -1.0))
+        paddle_pos = info.get("paddle_pos", (-1.0, -1.0))
+
+        # Ball velocity from consecutive positions
+        if self._last_ball_pos_for_vel[0] >= 0 and ball_pos[0] >= 0:
+            ball_vx = np.clip(
+                (ball_pos[0] - self._last_ball_pos_for_vel[0]) * 10, -1.0, 1.0
+            )
+            ball_vy = np.clip(
+                (ball_pos[1] - self._last_ball_pos_for_vel[1]) * 10, -1.0, 1.0
+            )
+        else:
+            ball_vx = 0.0
+            ball_vy = 0.0
+        self._last_ball_pos_for_vel = ball_pos
+
+        return np.array(
+            [ball_vx, ball_vy, paddle_pos[0], paddle_pos[1],
+             ball_pos[0], ball_pos[1]],
+            dtype=np.float32,
+        )
 
     def _preprocess(self, obs_tensor):
         if self._needs_transpose:
@@ -199,6 +251,8 @@ class EnhancedUnityWrapper(Env):
                 info["ball_pos"] = self.smooth_tracker.update(detected)
             else:
                 info["ball_pos"] = detected
+            # Detect paddle positions (returns [(x,y), (x,y)] for 2 largest paddles)
+            info["paddle_positions"] = detect_paddles(frame_uint8)
         return info
 
     def reset(self, *, seed=None, options=None):
@@ -228,22 +282,47 @@ class EnhancedUnityWrapper(Env):
 
         self.prev_raw_frame = None
         self._step_count = 0
+        self._steps_since_point = 0  # reset stalemate counter
         if self.hit_detector is not None:
             self.hit_detector.reset()
-        return np.concatenate(list(self.frames), axis=0), info
+
+        # Compute vector observation (velocity = 0 on reset since no previous pos)
+        self._last_ball_pos_for_vel = info.get("ball_pos", (-1.0, -1.0))
+        vector_obs = self._compute_vector_obs(info)
+        self._last_vector_obs = vector_obs
+
+        visual_obs = np.concatenate(list(self.frames), axis=0)
+        return {"visual": visual_obs, "vector": vector_obs}, info
 
     def step(self, action):
         # Mirror horizontal action if playing as left (model learned right-side coords)
         env_action = action.copy() if hasattr(action, 'copy') else np.array(action, copy=True)
         if self.play_as_left:
-            h = env_action[1]
-            env_action[1] = 2 - h  # 0<->2, 1 stays 1
+            h = env_action[1]  # index 1 = horizontal (order is [vertical, horizontal, rotation])
+            env_action[1] = 0 if h == 0 else 3 - h  # 0->0 (none), 1->2 (right->left), 2->1 (left->right)
+
+        # Fix 4: Mask rotation for no-rotation training (force action[2]=0)
+        if self.mask_rotation:
+            env_action[2] = 0
 
         actions = {self.agent: env_action}
         if self.opponent_policy is not None:
-            # Opponent acts on the current stacked observation (obs_t)
-            current_obs = np.concatenate(list(self.frames), axis=0)
-            opp_action = self.opponent_policy(current_obs)
+            # Opponent acts on the current stacked observation (obs_t).
+            # Pass Dict obs (visual + vector) for SelfPlayOpponent compatibility.
+            # Pass last-known ball_pos for ball-tracking opponents (backward compatible).
+            current_visual = np.concatenate(list(self.frames), axis=0)
+            current_obs = {"visual": current_visual, "vector": self._last_vector_obs}
+            try:
+                opp_action = self.opponent_policy(current_obs, ball_pos=self._last_ball_pos,
+                                                  paddle_pos=self._last_opp_paddle_pos)
+            except TypeError:
+                try:
+                    opp_action = self.opponent_policy(current_obs, ball_pos=self._last_ball_pos)
+                except TypeError:
+                    opp_action = self.opponent_policy(current_obs)
+            # DEBUG: verify opponent action
+            if self._step_count % 100 == 0:
+                print(f"[DEBUG] Step {self._step_count}: our_action={env_action}  opp_action={opp_action}", flush=True)
             actions[self.agent_other] = opp_action
 
         obs_dict, rewards, terminations, infos = self.env.step(actions)
@@ -257,11 +336,51 @@ class EnhancedUnityWrapper(Env):
 
         info = self._build_info(raw_obs)
 
+        # Update last-known ball_pos for next step's opponent_policy call.
+        if "ball_pos" in info:
+            self._last_ball_pos = info["ball_pos"]
+
         # Mirror ball_pos x-coordinate when playing left side so it matches
         # the already-flipped observation coordinate space.
         if self.play_as_left and "ball_pos" in info:
             bx, by = info["ball_pos"]
             info["ball_pos"] = (1.0 - bx, by) if bx >= 0 else (bx, by)
+
+        # Select our paddle from detected positions and mirror if playing left.
+        # Camera is always left-side (PAgent1): left paddle (smaller x) = PAgent1,
+        # right paddle (larger x) = PAgent2.
+        info["paddle_pos"] = (-1.0, -1.0)
+        if "paddle_positions" in info:
+            paddles = info["paddle_positions"]
+            valid = [p for p in paddles if p[0] >= 0]
+            if len(valid) >= 1:
+                if self.play_as_left:
+                    # Our paddle = PAgent1 = left paddle (smaller x), mirror x
+                    ours = min(valid, key=lambda p: p[0])
+                    px, py = ours
+                    info["paddle_pos"] = (1.0 - px, py) if px >= 0 else (-1.0, -1.0)
+                else:
+                    # Our paddle = PAgent2 = right paddle (larger x), no mirror
+                    ours = max(valid, key=lambda p: p[0])
+                    info["paddle_pos"] = ours
+
+        # Extract OPPONENT's paddle position (in camera space, no mirror)
+        # for passing to opponent_policy on next step.
+        # Opponent paddle = the OTHER paddle from ours.
+        if "paddle_positions" in info:
+            paddles = info["paddle_positions"]
+            valid = [p for p in paddles if p[0] >= 0]
+            if len(valid) >= 2:
+                if self.play_as_left:
+                    # Our paddle = left (smaller x), opponent = right (larger x)
+                    self._last_opp_paddle_pos = max(valid, key=lambda p: p[0])
+                else:
+                    # Our paddle = right (larger x), opponent = left (smaller x)
+                    self._last_opp_paddle_pos = min(valid, key=lambda p: p[0])
+            elif len(valid) == 1:
+                # Only one paddle detected — it's ours (already selected above)
+                # Can't determine opponent position, keep previous estimate
+                pass
 
         if self.use_heatmap:
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
@@ -269,19 +388,41 @@ class EnhancedUnityWrapper(Env):
 
         self.frames.append(obs)
 
+        # Compute vector observation (after ball_pos mirroring for left-side play)
+        vector_obs = self._compute_vector_obs(info)
+        self._last_vector_obs = vector_obs
+
         agent_reward = rewards[self.agent] - rewards[self.agent_other]
+        info["raw_reward"] = float(agent_reward)  # for eval rally segmentation
         if self.apply_reward_shaping and self.ball_tracker is not None:
             ball_pos = info.get("ball_pos", (-1.0, -1.0))
+            paddle_pos = info.get("paddle_pos", (-1.0, -1.0))
+            # Use detected paddle position if available, else fall back to config
+            if paddle_pos[0] >= 0:
+                reward_kwargs = {**self.reward_config, "paddle_x": paddle_pos[0],
+                                 "paddle_pos_y": paddle_pos[1]}
+            else:
+                reward_kwargs = {**self.reward_config, "paddle_pos_y": None}
             agent_reward = shaped_reward(
                 agent_reward, ball_pos, training_progress=self.training_progress,
                 step=self._step_count, hit_detector=self.hit_detector,
                 rotation_action=int(action[2]),
-                **self.reward_config,
+                **reward_kwargs,
             )
         self._step_count += 1
         terminated = terminations[self.agent]
 
-        return np.concatenate(list(self.frames), axis=0), agent_reward, terminated, False, info
+        # Stalemate detection: terminate if no point scored for max_rally_steps
+        if abs(float(agent_reward)) > 0.5:
+            self._steps_since_point = 0  # point scored, reset counter
+        else:
+            self._steps_since_point += 1
+        if self.max_rally_steps > 0 and self._steps_since_point >= self.max_rally_steps:
+            terminated = True
+            info["stalemate"] = True
+
+        visual_obs = np.concatenate(list(self.frames), axis=0)
+        return {"visual": visual_obs, "vector": vector_obs}, agent_reward, terminated, False, info
 
     def close(self):
         self.env.close()

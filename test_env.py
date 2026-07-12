@@ -89,7 +89,7 @@ def compute_spin_rate(model, env, num_episodes=1, max_steps_per_ep=100):
     Returns
     -------
     dict
-        spin_rate:  fraction of steps where rotation action != 1
+        spin_rate:  fraction of steps where rotation action != 0
         paddle_contact_rate: fraction of steps where paddle moves without spin
     """
     spin_count = 0
@@ -103,9 +103,9 @@ def compute_spin_rate(model, env, num_episodes=1, max_steps_per_ep=100):
             if done[0]:
                 break
             action, _ = model.predict(obs[0], deterministic=True)
-            if action[2] != 1:               # rotation = spin
+            if action[2] != 0:               # rotation = spin
                 spin_count += 1
-            if action[2] == 1 and action[0] != 1:   # moving = contact
+            if action[2] == 0 and action[0] != 0:   # moving = contact
                 contact_count += 1
             total_steps += 1
             obs, reward, done, info = env.step(action.reshape(1, 3))

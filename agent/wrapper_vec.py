@@ -12,7 +12,9 @@ def make_unity_env_fn(rank, build_path, frame_stack=16, use_ball_tracking=True,
                       use_rgb=False, use_frame_diff=False, use_heatmap=False,
                       reward_config=None, opponent_policy=None,
                       play_as_left=False,
-                      heatmap_sigma=5, heatmap_weight=0.7): ##NEW
+                      heatmap_sigma=5, heatmap_weight=0.7,
+                       mask_rotation=False,  # Fix 4: rotation masking
+                       max_rally_steps=500):  # stalemate termination
     def _thunk():
         string_channel = StringSideChannel()
         channel = CustomDataChannel()
@@ -38,8 +40,10 @@ def make_unity_env_fn(rank, build_path, frame_stack=16, use_ball_tracking=True,
             reward_config=reward_config,
             opponent_policy=opponent_policy,
             play_as_left=play_as_left,
-            heatmap_sigma=heatmap_sigma, #NEW
-            heatmap_weight=heatmap_weight, #NEW
+            heatmap_sigma=heatmap_sigma,
+            heatmap_weight=heatmap_weight,
+            mask_rotation=mask_rotation,
+            max_rally_steps=max_rally_steps,
         )
         return env
     return _thunk
@@ -49,7 +53,9 @@ def create_vec_env(build_path, num_envs=8, frame_stack=16,
                    use_ball_tracking=True, base_port=5005,
                    use_rgb=False, use_frame_diff=False, use_heatmap=False,
                    reward_config=None, opponent_policy=None,
-                   heatmap_sigma=5, heatmap_weight=0.7): #NEW
+                   heatmap_sigma=5, heatmap_weight=0.7,
+                    mask_rotation=False,
+                    max_rally_steps=500):
     env_fns = [
         make_unity_env_fn(
             rank=i,
@@ -63,8 +69,10 @@ def create_vec_env(build_path, num_envs=8, frame_stack=16,
             reward_config=reward_config,
             opponent_policy=opponent_policy,
             play_as_left=(i >= num_envs // 2),  # half left, half right
-            heatmap_sigma=heatmap_sigma, #NEW
-            heatmap_weight=heatmap_weight, #NEW
+            heatmap_sigma=heatmap_sigma,
+            heatmap_weight=heatmap_weight,
+            mask_rotation=mask_rotation,
+            max_rally_steps=max_rally_steps,
         )
         for i in range(num_envs)
     ]

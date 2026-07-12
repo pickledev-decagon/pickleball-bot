@@ -57,8 +57,8 @@ RESULTS_DIR = str(PROJECT_ROOT / "results")
 
 
 # --- Environment defaults ---
-NUM_ENVS = 8
-FRAME_STACK = 16
+NUM_ENVS = 2  # was 8 — sweep showed 2 envs = 67 fps vs 8 envs = 19 fps on Mac
+FRAME_STACK = 4  # was 16 — Phase 2 sweep: 4-frame+heatmap beat 16-frame+heatmap at 50k (EV 0.526 vs 0.483). Revisit at Phase 5 scale.
 
 
 # --- Curriculum stages ---

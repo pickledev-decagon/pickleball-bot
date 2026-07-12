@@ -25,7 +25,7 @@ import collections
 import numpy as np
 import cv2
 from stable_baselines3 import PPO
-from env.preprocessing import BallTracker, SmoothBallTracker
+from env.preprocessing import BallTracker, SmoothBallTracker, detect_paddles
 
 
 class CompetitionPreprocessor:
@@ -58,11 +58,38 @@ class CompetitionPreprocessor:
         self._initialized = False
         self.ball_tracker = BallTracker() if use_heatmap else None
         self.smooth_tracker = SmoothBallTracker() if use_heatmap else None
+        # Vector obs tracking (must match wrapper.py)
+        self._last_ball_pos_for_vel = (-1.0, -1.0)
+        self._play_as_left = False  # set by AsyncPolicy
 
     def reset(self):
         """Clear frame buffer. Call at start of new match if needed."""
         self.frames.clear()
         self._initialized = False
+        self._last_ball_pos_for_vel = (-1.0, -1.0)
+
+    def _compute_vector_obs(self, ball_pos, paddle_pos):
+        """Compute 6-dim vector obs. Must match wrapper.py:_compute_vector_obs.
+
+        Returns: [ball_vx, ball_vy, paddle_x, paddle_y, ball_x, ball_y]
+        """
+        if self._last_ball_pos_for_vel[0] >= 0 and ball_pos[0] >= 0:
+            ball_vx = np.clip(
+                (ball_pos[0] - self._last_ball_pos_for_vel[0]) * 10, -1.0, 1.0
+            )
+            ball_vy = np.clip(
+                (ball_pos[1] - self._last_ball_pos_for_vel[1]) * 10, -1.0, 1.0
+            )
+        else:
+            ball_vx = 0.0
+            ball_vy = 0.0
+        self._last_ball_pos_for_vel = ball_pos
+
+        return np.array(
+            [ball_vx, ball_vy, paddle_pos[0], paddle_pos[1],
+             ball_pos[0], ball_pos[1]],
+            dtype=np.float32,
+        )
 
     # ⚠️ SYNC WARNING: This must stay identical to env/wrapper.py:_render_heatmap().
     # Any change to training preprocessing MUST be replicated here.
@@ -102,12 +129,12 @@ class CompetitionPreprocessor:
         return np.clip(gray_frame + heatmap * self.heatmap_weight, 0.0, 1.0)
 
     def process(self, raw_obs):
-        """Convert raw competition observation to stacked grayscale frame.
+        """Convert raw competition observation to Dict obs for MultiInputPolicy.
 
         Args:
             raw_obs: np.ndarray, shape (3, H, W) channel-first RGB, float32 [0,1].
         Returns:
-            np.ndarray shape (frame_stack, 84, 168) float32.
+            dict {"visual": (frame_stack, 84, 168), "vector": (6,)} float32.
         """
         obs = np.array(raw_obs, dtype=np.float32)
 
@@ -122,29 +149,52 @@ class CompetitionPreprocessor:
         # 3. Transpose to (H, W, C) for OpenCV
         obs_hwc = obs.transpose(1, 2, 0)
 
-        # 4. Ball tracking on RGB frame (before grayscale) for heatmap
+        # 4. Ball tracking + paddle detection on RGB frame
+        frame_uint8 = (obs_hwc * 255).astype(np.uint8)
         ball_pos = (-1.0, -1.0)
         if self.use_heatmap and self.ball_tracker is not None:
-            frame_uint8 = (obs_hwc * 255).astype(np.uint8)
             detected = self.ball_tracker.detect(frame_uint8)
             if self.smooth_tracker is not None:
                 ball_pos = self.smooth_tracker.update(detected)
             else:
                 ball_pos = detected
 
-        # 5. Grayscale
-        gray = cv2.cvtColor(obs_hwc, cv2.COLOR_RGB2GRAY)
+        # Detect paddles (same as wrapper.py)
+        paddle_positions = detect_paddles(frame_uint8)
+        # Select our paddle: right side = larger x (camera is always left-side PAgent1)
+        # If play_as_left, our paddle = left (smaller x), mirror x
+        valid_paddles = [p for p in paddle_positions if p[0] >= 0]
+        paddle_pos = (-1.0, -1.0)
+        if len(valid_paddles) >= 1:
+            if self._play_as_left:
+                ours = min(valid_paddles, key=lambda p: p[0])
+                px, py = ours
+                paddle_pos = (1.0 - px, py) if px >= 0 else (-1.0, -1.0)
+            else:
+                ours = max(valid_paddles, key=lambda p: p[0])
+                paddle_pos = ours
 
-        # 6. Resize to (84, 168) — cv2.resize uses (width, height)
+        # Mirror ball_pos for left-side play (must match wrapper.py)
+        if self._play_as_left and ball_pos[0] >= 0:
+            ball_pos = (1.0 - ball_pos[0], ball_pos[1])
+
+        # 5. Mirror the visual before grayscale for left-side play. This
+        # matches env/wrapper.py:_preprocess(), where the image is flipped
+        # before grayscale/resize and before heatmap rendering.
+        model_hwc = cv2.flip(obs_hwc, 1) if self._play_as_left else obs_hwc
+
+        # 6. Grayscale
+        gray = cv2.cvtColor(model_hwc, cv2.COLOR_RGB2GRAY)
+
+        # 7. Resize to (84, 168)
         gray = cv2.resize(gray, (self.target_w, self.target_h), interpolation=cv2.INTER_AREA)
-
-        # 7. Unity already returns float32 [0,1] — no /255.0 needed.
         gray = gray.astype(np.float32)
 
         # 8. Add channel dim -> (1, 84, 168)
         frame = np.expand_dims(gray, axis=0)
 
-        # 9. Overlay heatmap if enabled
+        # 9. Overlay heatmap if enabled. For left-side play, ball_pos is
+        # already mirrored to the flipped visual coordinate frame.
         if self.use_heatmap:
             frame = self._render_heatmap(frame, ball_pos)
 
@@ -156,8 +206,12 @@ class CompetitionPreprocessor:
         else:
             self.frames.append(frame)
 
-        # 11. Concatenate along channel axis -> (stack, 84, 168)
-        return np.concatenate(list(self.frames), axis=0)
+        # 11. Compute vector obs (after ball_pos/paddle_pos mirroring)
+        vector_obs = self._compute_vector_obs(ball_pos, paddle_pos)
+
+        # 12. Return Dict obs
+        visual_obs = np.concatenate(list(self.frames), axis=0)
+        return {"visual": visual_obs, "vector": vector_obs}
 
 
 class AsyncPolicy:
@@ -193,9 +247,10 @@ class AsyncPolicy:
             heatmap_sigma=heatmap_sigma,
             heatmap_weight=heatmap_weight,
         )
+        self.preprocessor._play_as_left = play_as_left  # for paddle selection + ball mirror
 
-        # Neutral action = no vertical movement, no horizontal movement, no rotation
-        self.current_action = np.array([1, 1, 1], dtype=np.int32)
+        # Neutral action = no horizontal movement, no vertical movement, no rotation
+        self.current_action = np.array([0, 0, 0], dtype=np.int32)
         self.lock = threading.Lock()
         self.worker = None
 
@@ -233,14 +288,25 @@ class AsyncPolicy:
             return self.current_action.copy()
 
     def _infer_thread(self, obs):
-        """Background thread: run model inference."""
-        try:
-            # If playing left, flip observation so right-side model understands it
-            if self.play_as_left:
-                obs = self._horizontal_flip_obs(obs)
+        """Background thread: run model inference.
 
-            # Add batch dimension for SB3
-            obs_batch = np.expand_dims(obs, axis=0)
+        obs is now a model-ready Dict {"visual": (C,H,W), "vector": (6,)}
+        from the preprocessor. For left-side play, the preprocessor already
+        applies the same visual flip and coordinate mirroring used during
+        training, so only the returned environment action is mirrored back.
+        """
+        try:
+            if isinstance(obs, dict):
+                obs_batch = {
+                    "visual": np.expand_dims(obs["visual"], axis=0),
+                    "vector": np.expand_dims(obs["vector"], axis=0),
+                }
+            else:
+                # Legacy: obs is (C, H, W) array
+                if self.play_as_left:
+                    obs = np.flip(obs, axis=2).copy()
+                obs_batch = np.expand_dims(obs, axis=0)
+
             action, _ = self.model.predict(obs_batch, deterministic=True)
             action = action.astype(np.int32).flatten()[:3]
             action = np.clip(action, 0, 2)
@@ -265,12 +331,12 @@ class AsyncPolicy:
     @staticmethod
     def _mirror_horizontal_action(action):
         """
-        Mirror horizontal action: 0 <-> 2, 1 stays 1.
+        Mirror horizontal action: swap right(1) <-> left(2), keep none(0) fixed.
         action is [vertical, horizontal, rotation].
         """
         mirrored = action.copy()
-        h = mirrored[1]
-        mirrored[1] = 2 - h  # 0->2, 1->1, 2->0
+        h = mirrored[1]  # index 1 = horizontal (order is [vertical, horizontal, rotation])
+        mirrored[1] = 0 if h == 0 else 3 - h  # 0->0 (none), 1->2 (right->left), 2->1 (left->right)
         return mirrored
 
 

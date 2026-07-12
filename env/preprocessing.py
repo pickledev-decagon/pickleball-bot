@@ -68,19 +68,20 @@ def frame_diff(prev_frame, curr_frame, threshold=30):
 
 def detect_paddles(frame_rgb, lower_color=None, upper_color=None):
     if lower_color is None:
-        lower_color = np.array([0, 0, 200], dtype=np.uint8)
+        lower_color = np.array([100, 50, 50], dtype=np.uint8)  # blue paddles
     if upper_color is None:
-        upper_color = np.array([180, 50, 255], dtype=np.uint8)
-    hsv = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2HSV)
+        upper_color = np.array([130, 255, 255], dtype=np.uint8)
+    # Use BGR2HSV — Unity frames are BGR (like OpenCV default), not RGB.
+    # RGB2HSV was finding large static court elements instead of actual paddles.
+    hsv = cv2.cvtColor(frame_rgb, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_color, upper_color)
-    kernel = np.ones((3, 3), np.uint8)
-    mask = cv2.erode(mask, kernel, iterations=1)
-    mask = cv2.dilate(mask, kernel, iterations=2)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     positions = []
     for c in contours:
         area = cv2.contourArea(c)
-        if area > 20:
+        # Filter: exclude noise (too small) and static court elements (too large)
+        # Actual paddles are ~50-200 area; static objects are ~900+
+        if 20 < area < 500:
             x, y, w, h = cv2.boundingRect(c)
             cx = (x + w / 2) / frame_rgb.shape[1]
             cy = (y + h / 2) / frame_rgb.shape[0]

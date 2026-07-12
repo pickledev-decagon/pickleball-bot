@@ -37,12 +37,12 @@ def compute_spin_rate(model, env_fn, num_episodes=3, max_steps_per_ep=500):
     """Quantify paddle spinning over several evaluation episodes.
 
     Creates a fresh env and measures what fraction of actions have
-    non-neutral rotation (action[2] != 1).
+    non-neutral rotation (action[2] != 0).
 
     Returns
     -------
     dict
-        spin_rate:  fraction of steps where rotation action != 1
+        spin_rate:  fraction of steps where rotation action != 0
         total_steps: number of steps measured
     """
     env = env_fn()
@@ -58,7 +58,7 @@ def compute_spin_rate(model, env_fn, num_episodes=3, max_steps_per_ep=500):
                 if done:
                     break
                 action, _ = model.predict(obs, deterministic=True)
-                if action[2] != 1:
+                if action[2] != 0:
                     spin_count += 1
                 total_steps += 1
                 obs, reward, terminated, truncated, info = env.step(action)
@@ -77,7 +77,7 @@ def compute_spin_rate(model, env_fn, num_episodes=3, max_steps_per_ep=500):
 def run_full_evaluation(model_path, n_matches=50, device="cpu",
                         frame_stack=4, use_heatmap=False,
                         heatmap_sigma=5, heatmap_weight=0.7,
-                        base_port=6000, verbose=True):
+                        base_port=6000, verbose=True, deterministic=True):
     """Run the full evaluation suite for a trained checkpoint.
 
     Returns dict of all metrics.
@@ -87,6 +87,7 @@ def run_full_evaluation(model_path, n_matches=50, device="cpu",
     print(f"Config: frame_stack={frame_stack}, heatmap={use_heatmap}")
     if use_heatmap:
         print(f"        heatmap_sigma={heatmap_sigma}, heatmap_weight={heatmap_weight}")
+    print(f"deterministic: {deterministic}")
     print(f"Matches per config: {n_matches}")
     print(f"{'='*60}\n")
 
@@ -117,7 +118,7 @@ def run_full_evaluation(model_path, n_matches=50, device="cpu",
         side_results = {}
         for opp in ["no_op", "random", "square"]:
             t0 = time.time()
-            r = evaluator.evaluate_vs(opp, n_matches=n_matches, deterministic=True)
+            r = evaluator.evaluate_vs(opp, n_matches=n_matches, deterministic=deterministic)
             elapsed = time.time() - t0
             side_results[opp] = {
                 "win_rate": r["win_rate"],
@@ -144,6 +145,7 @@ def run_full_evaluation(model_path, n_matches=50, device="cpu",
         use_heatmap=use_heatmap,
         heatmap_sigma=heatmap_sigma, heatmap_weight=heatmap_weight,
         play_as_left=False, base_port=base_port + 2,
+        opponent_policy=lambda obs: np.array([0, 0, 0], dtype=np.int32),
     )
     spin_results = compute_spin_rate(model, spin_env_fn, num_episodes=3)
     results["spin_rate"] = spin_results
@@ -181,6 +183,9 @@ if __name__ == "__main__":
                         help="Enable heatmap overlay (must match training)")
     parser.add_argument("--heatmap-sigma", type=int, default=5)
     parser.add_argument("--heatmap-weight", type=float, default=0.7)
+    parser.add_argument("--no-deterministic", action="store_true",
+                        help="Use stochastic sampling (deterministic=False). "
+                             "Useful for undertrained models where argmax mode-collapses.")
     args = parser.parse_args()
 
     if not os.path.exists(args.checkpoint):
@@ -195,6 +200,7 @@ if __name__ == "__main__":
         use_heatmap=args.heatmap,
         heatmap_sigma=args.heatmap_sigma,
         heatmap_weight=args.heatmap_weight,
+        deterministic=not args.no_deterministic,
     )
 
     print_summary(results)

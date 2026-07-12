@@ -31,7 +31,7 @@ from agent.wrapper_vec import create_vec_env
 
 
 def _no_op_policy(obs):
-    return np.array([1, 1, 1], dtype=np.int32)
+    return np.array([0, 0, 0], dtype=np.int32)
 
 
 def _random_policy(obs):
@@ -44,10 +44,10 @@ _square_step_counter = [0]
 def _square_motion_policy(obs):
     side = (_square_step_counter[0] // 30) % 4
     dirs = [
-        np.array([1, 0, 1], dtype=np.int32),
-        np.array([0, 1, 1], dtype=np.int32),
-        np.array([2, 0, 1], dtype=np.int32),
-        np.array([0, 2, 1], dtype=np.int32),
+        np.array([1, 0, 0], dtype=np.int32),
+        np.array([0, 1, 0], dtype=np.int32),
+        np.array([2, 0, 0], dtype=np.int32),
+        np.array([0, 2, 0], dtype=np.int32),
     ]
     _square_step_counter[0] += 1
     return dirs[side]
@@ -57,13 +57,21 @@ def _measure_spin_rate(model, build_path, frame_stack=4, use_heatmap=False,
                        heatmap_sigma=5, heatmap_weight=0.7,
                        num_episodes=3, max_steps=500):
     """Quick spin measurement after training."""
+    import time
     from agent.wrapper_vec import make_unity_env_fn
+
+    # Kill stale Unity processes to avoid port conflicts
+    from subprocess import run, DEVNULL
+    run(["pkill", "-f", "Mac.app"], capture_output=True)
+    time.sleep(3)
+
     env_fn = make_unity_env_fn(
         rank=99, build_path=build_path,
         frame_stack=frame_stack, use_ball_tracking=use_heatmap,
         use_heatmap=use_heatmap,
         heatmap_sigma=heatmap_sigma, heatmap_weight=heatmap_weight,
         play_as_left=False, base_port=6000,
+        opponent_policy=_no_op_policy,
     )
     env = env_fn()
     env.apply_reward_shaping = False
@@ -77,7 +85,7 @@ def _measure_spin_rate(model, build_path, frame_stack=4, use_heatmap=False,
                 if done:
                     break
                 action, _ = model.predict(obs, deterministic=True)
-                if action[2] != 1:
+                if action[2] != 0:
                     spin_count += 1
                 total_steps += 1
                 obs, reward, terminated, truncated, info = env.step(action)

@@ -60,7 +60,7 @@ class MatchEvaluator:
             for match_i in range(n_matches):
                 # Inject opponent policy
                 if opponent_type == "no_op":
-                    env.opponent_policy = lambda obs: np.array([1, 1, 1], dtype=np.int32)
+                    env.opponent_policy = lambda obs: np.array([0, 0, 0], dtype=np.int32)
                 elif opponent_type == "random":
                     env.opponent_policy = lambda obs: env.action_space.sample()
                 elif opponent_type == "square":
@@ -68,6 +68,18 @@ class MatchEvaluator:
                     env.opponent_policy = lambda obs: self._square_motion(seq_step)
                 elif opponent_type == "self":
                     env.opponent_policy = lambda obs: self._self_play_policy(obs, deterministic)
+                elif opponent_type == "ball_tracking":
+                    from env.ball_tracking_opponent import make_ball_tracking_opponent
+                    env.opponent_policy = make_ball_tracking_opponent(
+                        hit_rate=0.6, noise_rate=0.2, reaction_delay=3)
+                elif opponent_type == "kitchen_server":
+                    from env.specialist_opponents import make_kitchen_server
+                    env.opponent_policy = make_kitchen_server(
+                        hit_rate=0.9, noise_rate=0.05, reaction_delay=0)
+                elif opponent_type == "net_interceptor":
+                    from env.specialist_opponents import make_net_interceptor
+                    env.opponent_policy = make_net_interceptor(
+                        hit_rate=0.9, noise_rate=0.05, reaction_delay=0)
                 else:
                     raise ValueError(f"Unknown opponent_type: {opponent_type}")
 
@@ -167,10 +179,10 @@ class MatchEvaluator:
         """Curriculum stage-2 square motion opponent."""
         side = (step_counter[0] // 30) % 4
         dirs = [
-            np.array([1, 0, 1], dtype=np.int32),
-            np.array([0, 1, 1], dtype=np.int32),
-            np.array([2, 0, 1], dtype=np.int32),
-            np.array([0, 2, 1], dtype=np.int32),
+            np.array([1, 0, 0], dtype=np.int32),
+            np.array([0, 1, 0], dtype=np.int32),
+            np.array([2, 0, 0], dtype=np.int32),
+            np.array([0, 2, 0], dtype=np.int32),
         ]
         step_counter[0] += 1
         return dirs[side]
