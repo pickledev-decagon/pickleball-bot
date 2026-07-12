@@ -2,6 +2,7 @@
 *.zip
 *.pt
 *.pkl
+*.mov
 checkpoints_selfplay_v2/
 logs_selfplay_v2/
 opponent_buffer_v2/
@@ -22,6 +23,8 @@ config.json
 # === Analysis Artifacts ===
 env/analysis_output/
 env/captured_frames/
+logs_training/
+experiments/
 
 # === macOS ===
 .DS_Store
