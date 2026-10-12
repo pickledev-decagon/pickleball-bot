@@ -1,64 +1,68 @@
 # dPickleBall Bot 🤖🏓
 
-**Pickleball RL agent** trained via self-play and visual observation for the dPickleBall competition. Uses SB3 PPO with 16-frame stacked grayscale observations, ball-tracking heatmaps, and a 3-stage curriculum (no-op → square motion → self-play).
+**Pickleball RL agent** trained via self-play and visual observation for the dPickleBall competition. Uses SB3 PPO with 4-frame stacked grayscale observations, ball-tracking heatmaps, and reward shaping with annealed dense rewards. **Final result: 100% win rate** across all opponent types on both court sides (see [REPORT.md](REPORT.md)).
 
 ---
+
+## 🏆 Final Results
+
+The submitted checkpoint is `Competition_Group(10)/exp003_75000_steps.zip` (26.2 MB, SB3 PPO, deterministic inference).
+
+**Evaluation — 50 matches per condition:**
+
+| Condition | Win Rate | Avg Point Diff |
+|-----------|----------|----------------|
+| Right side vs. square | 100% | +15.88 |
+| Left side vs. square | 100% | +17.78 |
+| Right / Left vs. no_op | 100% | — |
+
+**Inference latency:** mean 1.48 ms / p95 2.21 ms per step — far within the 0.01 s competition deadline.
+
+**Submission entry points** (self-contained, no project imports; model loaded from same directory):
+
+| File | Role |
+|------|------|
+| `teamX.py` | Left-side agent — mirrors observations & actions |
+| `teamY.py` | Right-side agent |
+| `exp003_75000_steps.zip` | PPO checkpoint (`MultiInputActorCriticPolicy`) |
+| `Competition_local_mac.py` | Local match runner for pre-submission testing |
 
 ## 👥 Team
 
-| Member | Branch | Area | Files |
-|--------|--------|------|-------|
-| **Amber** | `team/arch-variants` | Model Architecture | `agent/two_tower_cnn.py`, `env/wrapper.py` (preprocessing pipeline) |
-| **Yenly** | `team/reward-shaping` | Reward Functions | `agent/reward_shaping.py`, `agent/experiment_configs.py` |
-| **Siao Xuan** | `team/obs-variants` | Observation | `env/preprocessing.py`, ball detection + heatmap (via `env/wrapper.py`) |
-| **Keven** | `team/hyperparams` | Hyperparameters | `sweep_configs/*.json`, `scripts/grid_search.py` |
-| **Hui Xuan** | `team/training-strategy` | Training Strategy | `agent/train_selfplay_v2.py`, `agent/selfplay_callback.py`, `agent/buffer.py`, `config.py` |
+| Member | Area | Key Contribution |
+|--------|------|-----------------|
+| **Amber** | Model Architecture | TwoTowerCNN / SpatialSoftmaxCNN alternatives to NatureCNN |
+| **Yenly** | Reward Shaping | 18 sensitivity experiments → hit 1.0 + placement 0.025 optimal |
+| **Siao Xuan** | Observation | HSV ball tracking, Gaussian heatmap, frame stacking, vector obs |
+| **Keven** | Hyperparameters & Infra | PPO config, experiment harness (`run_experiment.py`), evaluation |
+| **Hui Xuan** | Training Strategy | Curriculum schedule, self-play buffer, `train_selfplay_v2.py` |
 
-> **`env/wrapper.py` note:** Amber owns the preprocessing pipeline (frame conversion, resize, grayscale). Siao Xuan owns ball detection + heatmap rendering consumed by the wrapper. Coordinate changes via PR.
+## 🔬 Method Summary
 
-### ⚠️ Branch Rule (Social Contract)
+- **Observation:** dict input — `visual (4, 84, 168)` grayscale + Gaussian heatmap overlay (σ=5, w=0.7) at the tracked ball position, plus a 6-D `vector` observation `[ball_vx, ball_vy, paddle_x, paddle_y, ball_x, ball_y]`. Heatmap was the single biggest improvement (explained variance 0.33 vs. 0.009 without).
+- **Rewards:** sparse win/loss from Unity + dense shaping (proximity, hit bonus, placement bonus) annealed to zero over the first 60% of training.
+- **Training:** PPO, 8 parallel Unity envs (4 left + 4 right), 200k-step 2-stage curriculum (no_op → square opponent).
+- **Key bugs fixed:** double normalization, 1D hit detection, disabled rotation penalty, spinning square opponent.
 
-GitHub free org doesn't enforce branch protection, so this is a **team rule**:
+Full details: **[REPORT.md](REPORT.md)** · training data flow: **[FLOW.md](FLOW.md)**
 
-> **Push only to `team/*` branches. Never push to `main` directly.**
-> All changes go through Pull Requests. Keven reviews and merges.
+## 📖 Reading Order
 
-If someone accidentally pushes to `main`, see the recovery guide below.
+| # | File | What it covers |
+|---|------|---------------|
+| 1 | **[`FLOW.md`](FLOW.md)** | Full system data-flow diagrams (Unity → wrapper → PPO → export) |
+| 2 | **[`REPORT.md`](REPORT.md)** | Final report — methodology, results, lessons learned |
+| 3 | **[`PLAN.md`](PLAN.md)** | Experiment planning & validation methodology |
+| 4 | `archive/` | Historical build log & phase docs |
 
-### Workflow
-
-```
-Everyone experiments on their branch → push code, checkpoints to Google Drive
-                ↓
-Discuss results → pick best config for each area
-                ↓
-Keven does final combined training on main
-                ↓
-Package for competition → tag and submit
-```
-
----
-
-## 📖 What to Read First (in Order)
-
-| # | File | Why |
-|---|------|-----|
-| **1** | [`handoff.md`](handoff.md) | Copy-paste to ChatGPT/Copilot so your LLM understands the full project context. |
-| **2** | [`CONTRIBUTING.md`](CONTRIBUTING.md) | One-stop shop: roles, setup, git workflow, training plan, quick reference. |
-| **3** | `progress/member-X-AREA.md` | YOUR assigned area — variants, done criteria, blockers, dependencies, next steps. |
-| **4** | [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | Technical deep dive — read sections relevant to your area as needed. |
-
----
-
-## 🚀 Quick Start
+## 🚀 Quick Start (Reproduction)
 
 ### Prerequisites
 
 - Python 3.10, conda (Miniconda recommended)
-- **Mac:** Unity build `.app` (see step 3)
-- **Windows:** Unity build `.exe` (see [Windows setup notes](#windows-setup-notes))
+- Unity build `.app`/`.exe` ([Google Drive download](https://drive.google.com/drive/folders/1lFqj6lopoIO96C_IO8yGXGzRMY1S4fzi), 395 MB)
 
-### 1. Clone the repo
+### 1. Clone
 
 ```bash
 git clone https://github.com/pickledev-decagon/pickleball-bot.git
@@ -66,16 +70,13 @@ cd pickleball-bot
 git submodule update --init --depth 1
 ```
 
-### 2. Create environment and install
+### 2. Environment setup
 
 ```bash
 conda create -n dpickleball pip python=3.10.12 -y
 conda activate dpickleball
 
-# ML-Agents (from submodule)
 pip install -e ./dpickleball-ml-agents/ml-agents-envs
-
-# Core packages
 pip install stable-baselines3 opencv-python==4.7.0.72 \
             matplotlib numpy "torch>=2.3,<2.6" "torchvision>=0.18,<0.20"
 ```
@@ -89,21 +90,18 @@ pip install "setuptools<70"
 ```
 </details>
 
-### 3. Download Unity build and set path
+### 3. Unity build path
 
-Download from [Google Drive](https://drive.google.com/drive/folders/1lFqj6lopoIO96C_IO8yGXGzRMY1S4fzi) (395 MB).
-
-Create a `.env` file in the project root:
+Create a `.env` in the project root:
 
 **Mac:**
 ```bash
-echo 'DPICKLEBALL_BUILD_PATH="/path/to/Training/Mac/Mac.app"' > .env
-chmod -R 755 /path/to/Training/Mac/Mac.app
+echo 'DPICKLEBALL_BUILD_PATH="/path/to/Mac/Mac.app"' > .env
 ```
 
 **Windows:**
 ```bash
-echo DPICKLEBALL_BUILD_PATH=C:\path\to\Training\Windows\dp.exe > .env
+echo DPICKLEBALL_BUILD_PATH=C:\path\to\dp.exe > .env
 ```
 
 ### 4. Verify
@@ -113,32 +111,54 @@ python run_experiment.py --list
 python run_experiment.py --config baseline --steps 2000 --envs 2
 ```
 
-### 5. Create your branch and start
+## 🛠️ Usage
 
-Each member creates their own branch:
+| Task | Command |
+|------|---------|
+| Train (experiment harness) | `python run_experiment.py --config <name> --steps 100000 --envs 8` |
+| Curriculum / self-play training | `python agent/train_selfplay_v2.py` |
+| Evaluate a checkpoint | `python evaluate_checkpoint.py <checkpoint.zip> --matches 20` |
+| Quick eval vs all opponents | `python eval_quick.py` |
+| Watch agent play live | `python showcase.py --opponent square` |
+| Local competition match | `python Competition_local_mac.py` |
 
-| Member | Command |
-|--------|---------|
-| **Amber** (Architecture) | `git checkout -b team/arch-variants` |
-| **Yenly** (Reward) | `git checkout -b team/reward-shaping` |
-| **Siao Xuan** (Observation) | `git checkout -b team/obs-variants` |
-| **Hui Xuan** (Training) | `git checkout -b team/training-strategy` |
+## 🏗️ Repo Structure
 
-```bash
-# Push your branch to GitHub:
-git push -u origin team/your-branch-name
-
-# Then experiment, log, commit, and push regularly:
-git add <your-files>
-git commit -m "Describe what you changed"
-git push
+```
+pickleball-bot/
+├── Competition_Group(10)/  # Competition submission (teamX.py, teamY.py, checkpoint zip)
+├── Competition_local_mac.py # Local competition match runner
+├── agent/                  # Training logic
+│   ├── buffer.py           # Opponent buffer (checkpoint pool)
+│   ├── competition_export.py # Async inference for competition
+│   ├── eval_harness.py     # Win-rate evaluation
+│   ├── experiment_configs.py # 43 experiment presets
+│   ├── reward_shaping.py   # Proximity, hit, placement rewards
+│   ├── selfplay_callback.py # Mid-training checkpoint → buffer
+│   ├── train_selfplay_v2.py # Curriculum training
+│   ├── two_tower_cnn.py    # TwinNatureCNN, SpatialSoftmaxCNN
+│   └── wrapper_vec.py      # 8 parallel envs (4 left + 4 right)
+├── env/                    # Unity environment side
+│   ├── preprocessing.py    # BallTracker, SmoothBallTracker
+│   ├── wrapper.py          # EnhancedUnityWrapper
+│   └── *_opponent.py       # Specialist / self-play / ball-tracking opponents
+├── scripts/                # Benchmarking, validation, graph generation
+├── sweep_configs/          # Grid search phase configs
+├── archive/                # Historical docs (build log, phase plans)
+├── results/                # Final evaluation graphs & validation reports
+├── config.py               # Central config (paths, defaults)
+├── run_experiment.py       # Single experiment runner
+├── evaluate_checkpoint.py  # Checkpoint evaluation with match metrics
+├── showcase.py             # Watch agent play live
+├── FLOW.md / PLAN.md / REPORT.md  # Docs
+└── dpickleball-ml-agents/  # Git submodule (forked ML-Agents)
 ```
 
-When ready, open a Pull Request on GitHub → Keven reviews and merges.
+> **Note:** `checkpoints_selfplay_v2/`, `logs_selfplay_v2/`, large files in `results/`, and the Unity build are gitignored — download the Unity build separately (link above). Checkpoints live on Google Drive / local only.
 
 ---
 
-## <a name="windows-setup-notes"></a>🪟 Windows Setup Notes
+## 🪟 Windows Setup Notes
 
 | Area | Mac | Windows |
 |------|-----|---------|
@@ -150,124 +170,3 @@ When ready, open a Pull Request on GitHub → Keven reviews and merges.
 | Python packages | Same `pip install` | Same `pip install` |
 
 All `pip install` commands and Python code work identically on Windows. The only differences are the Unity build path format and process management commands.
-
----
-
-## 📋 Full Guides
-
-| Guide | What it covers |
-|-------|---------------|
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Team roles, initial setup, daily git workflow, training plan, experiment protocol, PR process, troubleshooting |
-| [`PROJECT_GUIDE.md`](PROJECT_GUIDE.md) | Architecture deep dive, reward formulas, curriculum stages, self-play mechanics, PPO config, reading training output, experiment catalog with all variants and decision tree |
-| [`handoff.md`](handoff.md) | LLM-ready project context — copy-paste to ChatGPT/Copilot for instant understanding |
-
----
-
-## 📊 Track Progress
-
-| File | What it shows |
-|------|---------------|
-| [`DASHBOARD.md`](DASHBOARD.md) | Full milestone tracker — what's done, what's next |
-| [`PROGRESS.md`](PROGRESS.md) | Team progress bars — per-member completion at a glance |
-| [`RESULTS.md`](RESULTS.md) | Cross-member comparison table — best configs per area |
-| [`progress/README.md`](progress/README.md) | How to log experiments and use the tracking system |
-| `progress/member-1-architecture.md` | M1 experiment log |
-| `progress/member-2-reward.md` | M2 experiment log |
-| `progress/member-3-observation.md` | M3 experiment log |
-| `progress/member-4-hyperparameters.md` | M4 experiment log |
-| `progress/member-5-training-strategy.md` | M5 experiment log |
-
----
-
-## 🏗️ Repo Structure
-
-```
-pickleball-bot/
-├── agent/                  # Training logic
-│   ├── buffer.py           # Opponent buffer (checkpoint pool)
-│   ├── competition_export.py # Async inference for competition
-│   ├── eval_harness.py     # Win-rate evaluation
-│   ├── evaluate.py         # Legacy (re-exports from competition_export)
-│   ├── experiment_configs.py # 15+ experiment presets
-│   ├── reward_shaping.py   # Proximity, hit, placement, aggression rewards
-│   ├── selfplay_callback.py # Mid-training checkpoint → buffer
-│   ├── train_selfplay_v2.py # 3-stage curriculum training
-│   ├── two_tower_cnn.py    # TwinNatureCNN, SpatialSoftmaxCNN
-│   └── wrapper_vec.py      # 8 parallel envs (4 left + 4 right)
-├── env/                    # Unity environment wrapper
-│   ├── preprocessing.py    # BallTracker, SmoothBallTracker
-│   └── wrapper.py          # EnhancedUnityWrapper (left/right support)
-├── scripts/                # Utilities
-│   ├── grid_search.py      # Hyperparameter sweep
-│   ├── test_competition_export.py # Export dry-run
-│   └── validate_tracker.py # Ball tracker validation
-├── sweep_configs/          # Grid search configs (frame_stack=16)
-├── progress/               # Per-member experiment logs
-├── archive/                # Historical docs (build log, phase plans)
-├── config.py               # Central config (paths, defaults)
-├── run_experiment.py       # Single experiment runner
-├── dpickleball-ml-agents/  # Git submodule (forked ML-Agents)
-├── handoff.md              # LLM context for teammates
-├── CONTRIBUTING.md         # ← start here
-├── PROJECT_GUIDE.md        # Technical reference
-├── RESULTS.md              # Experiment comparison table
-├── DASHBOARD.md            # Milestone tracker
-└── PROGRESS.md             # Progress bars
-```
-
----
-
-## 📈 Project Status
-
-| Phase | Status |
-|-------|--------|
-| Environment setup | ✅ Done |
-| Pipeline + all fixes | ✅ Done |
-| B1 smoke test (10k steps) | ✅ Passed |
-| **Team experiments** | ⏳ Ready to start |
-| Combination testing | ⏳ Not started |
-| Final combined training | ⏳ Not started |
-| Competition submission | ⬜ Not started |
-
-See **[DASHBOARD.md](DASHBOARD.md)** for the full milestone tracker.
-
----
-
-## 🛟 If Someone Pushes to `main` by Accident
-
-**Scenario:** A member runs `git push origin main` instead of their branch.
-
-**On your machine (Keven), fix it:**
-
-```bash
-# 1. Check what happened
-git log origin/main -5 --oneline
-
-# 2. Find the last good commit before the accidental push
-#    Look for the commit that was there before.
-#    Let's say the bad commit is at the top, good one below it.
-
-# 3. Reset main back to the last good commit and force push
-git checkout main
-git reset --hard <last-good-commit-hash>
-git push --force origin main
-
-# 4. Tell the member to rebase their branch
-#    On their machine:
-git checkout team/their-branch
-git rebase origin/main
-git push --force origin team/their-branch
-```
-
-**What if you're not sure which commit was good?**
-
-```bash
-# Check the remote directly
-git log origin/main -10 --oneline
-
-# The commits YOU pushed (fix #1, fix #2, etc.) are good.
-# If a commit message says something you didn't write → that's the bad one.
-# Reset to just before that commit.
-```
-
-This is safe because only your team uses the repo. A force push on `main` won't break anything as long as everyone rebases their branches after.
